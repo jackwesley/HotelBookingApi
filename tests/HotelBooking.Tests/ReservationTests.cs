@@ -13,9 +13,10 @@ namespace HotelBooking.Tests
             var guestId = Guid.NewGuid();
             var checkin = DateTime.Now.AddDays(1);
             var checkout = DateTime.Now.AddDays(4);
+            var room = new Room();
             var diffBetweenCheckinAndCheckoutInDays = checkout.Subtract(checkin).Days;
 
-            var reservation = new Reservation(guestId, checkin, checkout);
+            var reservation = new Reservation(guestId, room, checkin, checkout);
             //Act
             var isValid = reservation.IsValid();
 
@@ -30,9 +31,10 @@ namespace HotelBooking.Tests
             var guestId = Guid.NewGuid();
             var checkin = DateTime.Now.AddDays(1);
             var checkout = DateTime.Now.AddDays(5);
+            var room = new Room();
             var diffBetweenCheckinAndCheckoutInDays = checkout.Subtract(checkin).Days;
 
-            var reservation = new Reservation(guestId, checkin, checkout);
+            var reservation = new Reservation(guestId, room, checkin, checkout);
             //Act
             var isValid = reservation.IsValid();
 
@@ -47,9 +49,10 @@ namespace HotelBooking.Tests
             var guestId = Guid.NewGuid();
             var checkin = DateTime.Now.AddDays(31);
             var checkout = DateTime.Now.AddDays(34);
+            var room = new Room();
             var diffBetweenCheckinAndCheckoutInDays = checkout.Subtract(checkin).Days;
 
-            var reservation = new Reservation(guestId, checkin, checkout);
+            var reservation = new Reservation(guestId, room, checkin, checkout);
             //Act
             var isValid = reservation.IsValid();
 
@@ -65,8 +68,25 @@ namespace HotelBooking.Tests
             var checkin = DateTime.Now;
             var checkout = DateTime.Now.AddDays(3);
             var diffBetweenCheckinAndCheckoutInDays = checkout.Subtract(checkin).Days;
+            var room = new Room();
 
-            var reservation = new Reservation(guestId, checkin, checkout);
+            var reservation = new Reservation(guestId, room, checkin, checkout);
+            //Act
+            var isValid = reservation.IsValid();
+
+            //Assert
+            Assert.False(isValid);
+        }
+
+        [Fact]
+        public void Reservation_WithNullRoom_ShouldBeInValid()
+        {
+            //Arrange
+            var guestId = Guid.NewGuid();
+            var checkin = DateTime.Now;
+            var checkout = DateTime.Now.AddDays(3);
+   
+            var reservation = new Reservation(guestId, null, checkin, checkout);
             //Act
             var isValid = reservation.IsValid();
 

@@ -22,6 +22,8 @@ namespace HotelBooking.Data.Mappings
             builder.HasOne(x => x.Guest)
                 .WithOne(y => y.Reservation);
 
+            builder.HasOne(x => x.Room);
+
             builder.Ignore(x => x.ValidationResult);
 
 

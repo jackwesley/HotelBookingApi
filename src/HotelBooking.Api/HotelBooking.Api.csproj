@@ -17,6 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HotelBooking.Application\HotelBooking.Application.csproj" />
+    <ProjectReference Include="..\HotelBooking.CrossCutting\HotelBooking.CrossCutting.csproj" />
     <ProjectReference Include="..\HotelBooking.Data\HotelBooking.Data.csproj" />
   </ItemGroup>
 

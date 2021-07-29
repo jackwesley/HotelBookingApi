@@ -12,12 +12,13 @@ namespace HotelBooking.Domain.Models
         public Guid GuestId { get; private set; }
         public DateTime CheckIn { get; private set; }
         public DateTime CheckOut { get; private set; }
-
+        public Room Room { get; private set; }
         public virtual Guest Guest{get; set;}
 
-        public Reservation(Guid guestId, DateTime checkIn, DateTime checkOut)
+        public Reservation(Guid guestId, Room room, DateTime checkIn, DateTime checkOut)
         {
             GuestId = guestId;
+            Room = room;
             CheckIn = checkIn;
             CheckOut = checkOut;
         }
@@ -33,6 +34,9 @@ namespace HotelBooking.Domain.Models
     {
         public ReservationValidation()
         {
+            RuleFor(r => r.Room)
+              .NotNull()
+              .WithMessage("Room must be selected.");
 
             RuleFor(r => r.CheckOut.Subtract(r.CheckIn).Days)
               .LessThanOrEqualTo(3)

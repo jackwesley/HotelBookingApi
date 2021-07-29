@@ -34,20 +34,24 @@ namespace HotelBooking.Domain.Models
         public GuestValidation()
         {
             RuleFor(r => r.Name)
+             .NotEmpty()
              .NotNull()
              .WithMessage("Name must not be null");
 
             RuleFor(r => r.Document)
+             .NotEmpty()
              .NotNull()
-             .WithMessage("Name must not be null");
+             .WithMessage("Document must not be null");
 
             RuleFor(r => r.Email)
+             .NotEmpty()
              .NotNull()
-             .WithMessage("Name must not be null");
+             .WithMessage("Email must not be null");
 
             RuleFor(r => r.Phone)
+             .NotEmpty()
              .NotNull()
-             .WithMessage("Name must not be null");
+             .WithMessage("Phone must not be null");
         }
     }
 }

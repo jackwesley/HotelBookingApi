@@ -9,21 +9,25 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{4A37DE
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infra", "Infra", "{27091BDE-7335-45C1-999B-DFC2D9AB0238}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelBooking.Api", "src\HotelBooking.Api\HotelBooking.Api.csproj", "{1DEE0C3D-ECD2-41BF-8CEB-A51F09B30C4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HotelBooking.Api", "src\HotelBooking.Api\HotelBooking.Api.csproj", "{1DEE0C3D-ECD2-41BF-8CEB-A51F09B30C4E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelBooking.Domain", "src\HotelBooking.Domain\HotelBooking.Domain.csproj", "{EA952DA0-87EE-4431-9DD5-6126FE6E58A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HotelBooking.Domain", "src\HotelBooking.Domain\HotelBooking.Domain.csproj", "{EA952DA0-87EE-4431-9DD5-6126FE6E58A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelBooking.CrossCutting", "src\HotelBooking.CrossCutting\HotelBooking.CrossCutting.csproj", "{E758617C-C14F-4E5D-B409-5B9CA8AA0B9F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HotelBooking.CrossCutting", "src\HotelBooking.CrossCutting\HotelBooking.CrossCutting.csproj", "{E758617C-C14F-4E5D-B409-5B9CA8AA0B9F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelBooking.Data", "src\HotelBooking.Data\HotelBooking.Data.csproj", "{E0A9FA21-DD3E-4DC4-B435-CE651FAC5315}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HotelBooking.Data", "src\HotelBooking.Data\HotelBooking.Data.csproj", "{E0A9FA21-DD3E-4DC4-B435-CE651FAC5315}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{2DCCB93D-18EC-4D8C-898C-23DFF673F916}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelBooking.Tests", "tests\HotelBooking.Tests\HotelBooking.Tests.csproj", "{E033C0C3-D379-4CE5-A3C2-3785E597E89D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HotelBooking.Tests", "tests\HotelBooking.Tests\HotelBooking.Tests.csproj", "{E033C0C3-D379-4CE5-A3C2-3785E597E89D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{65C32042-A8B5-40FE-9F0B-E39607ABC40C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelBooking.Core", "src\HotelBooking.Core\HotelBooking.Core.csproj", "{BF4CDBB7-C1F6-48F8-90C7-07A5BA8B959E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HotelBooking.Core", "src\HotelBooking.Core\HotelBooking.Core.csproj", "{BF4CDBB7-C1F6-48F8-90C7-07A5BA8B959E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{055A1BB5-DDB9-49D3-8011-DFF7F810DDC5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelBooking.Application", "src\HotelBooking.Application\HotelBooking.Application.csproj", "{718533A8-4B42-4776-94C8-91D3BB432D6F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +59,10 @@ Global
 		{BF4CDBB7-C1F6-48F8-90C7-07A5BA8B959E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF4CDBB7-C1F6-48F8-90C7-07A5BA8B959E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF4CDBB7-C1F6-48F8-90C7-07A5BA8B959E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{718533A8-4B42-4776-94C8-91D3BB432D6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{718533A8-4B42-4776-94C8-91D3BB432D6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{718533A8-4B42-4776-94C8-91D3BB432D6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{718533A8-4B42-4776-94C8-91D3BB432D6F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,6 +74,7 @@ Global
 		{E0A9FA21-DD3E-4DC4-B435-CE651FAC5315} = {27091BDE-7335-45C1-999B-DFC2D9AB0238}
 		{E033C0C3-D379-4CE5-A3C2-3785E597E89D} = {2DCCB93D-18EC-4D8C-898C-23DFF673F916}
 		{BF4CDBB7-C1F6-48F8-90C7-07A5BA8B959E} = {65C32042-A8B5-40FE-9F0B-E39607ABC40C}
+		{718533A8-4B42-4776-94C8-91D3BB432D6F} = {055A1BB5-DDB9-49D3-8011-DFF7F810DDC5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BD1152F2-1350-4585-A27C-41BAE33FE2F5}
