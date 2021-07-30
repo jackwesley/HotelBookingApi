@@ -9,12 +9,13 @@ namespace HotelBooking.Domain.Models
 
         public Room()
         {
+            Id = new Guid("539161dd-0ac5-4222-a410-24fbaf7dc70f");
             Number = 1;
         }
 
         public override bool IsValid()
         {
-            throw new NotImplementedException();
+            return true;
         }
     }
 }

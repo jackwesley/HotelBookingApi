@@ -1,21 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HotelBooking.Application.DTOs
 {
     public class ReservationDto
     {
-        public ReservationDto(Guid guestId, DateTime checkIn, DateTime checkOut)
+        public ReservationDto(Guid guestId, Guid room, DateTime checkIn, DateTime checkOut)
         {
             GuestId = guestId;
+            Room = room;
             CheckIn = checkIn;
             CheckOut = checkOut;
         }
 
         public Guid GuestId { get; set; }
+        public Guid Room { get; set; }
         public DateTime CheckIn { get; set; }
         public DateTime CheckOut { get; set; }
     }

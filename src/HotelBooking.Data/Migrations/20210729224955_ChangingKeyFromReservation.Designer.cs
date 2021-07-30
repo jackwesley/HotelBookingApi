@@ -4,14 +4,16 @@ using HotelBooking.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HotelBooking.Data.Migrations
 {
     [DbContext(typeof(ReservationContext))]
-    partial class ReservationContextModelSnapshot : ModelSnapshot
+    [Migration("20210729224955_ChangingKeyFromReservation")]
+    partial class ChangingKeyFromReservation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,7 +67,8 @@ namespace HotelBooking.Data.Migrations
 
                     b.HasKey("Id", "GuestId", "RoomId", "CheckIn");
 
-                    b.HasIndex("GuestId");
+                    b.HasIndex("GuestId")
+                        .IsUnique();
 
                     b.HasIndex("RoomId");
 
@@ -89,8 +92,8 @@ namespace HotelBooking.Data.Migrations
             modelBuilder.Entity("HotelBooking.Domain.Models.Reservation", b =>
                 {
                     b.HasOne("HotelBooking.Domain.Models.Guest", "Guest")
-                        .WithMany("Reservations")
-                        .HasForeignKey("GuestId")
+                        .WithOne("Reservation")
+                        .HasForeignKey("HotelBooking.Domain.Models.Reservation", "GuestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -107,7 +110,7 @@ namespace HotelBooking.Data.Migrations
 
             modelBuilder.Entity("HotelBooking.Domain.Models.Guest", b =>
                 {
-                    b.Navigation("Reservations");
+                    b.Navigation("Reservation");
                 });
 #pragma warning restore 612, 618
         }

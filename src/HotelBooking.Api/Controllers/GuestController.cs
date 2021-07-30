@@ -1,11 +1,15 @@
-﻿using HotelBooking.Application.DTOs;
+﻿using FluentValidation.Results;
+using HotelBooking.Application.DTOs;
 using HotelBooking.Application.Services.Interfaces;
+using HotelBooking.Core.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HotelBooking.Api.Controllers
 {
-    public class GuestController : Controller
+    public class GuestController : MainController
     {
 
         private readonly IGuestService _guestService;
@@ -17,26 +21,21 @@ namespace HotelBooking.Api.Controllers
 
         [HttpGet]
         [Route("guest/{email}")]
+        [SwaggerResponse(statusCode: 200, type: typeof(GuestDto), description: "Data from Guest.")]
+        [SwaggerResponse(statusCode: 400, type: typeof(List<ValidationFailure>), description: "Bad request.")]
         public async Task<IActionResult> GetGuest(string email)
         {
-            var result = await _guestService.GetGuestByEmail(email);
 
-            if (result.Response == null)
-                return NotFound(result.ValidationResult.Errors);
-
-            return Ok(result.Response);
+            return CustomResponse(await _guestService.GetGuestByEmail(email));
         }
 
         [HttpPost]
         [Route("guest")]
+        [SwaggerResponse(statusCode: 200, type: typeof(GuestDto), description: "Data from Guest.")]
+        [SwaggerResponse(statusCode: 400, type: typeof(List<ValidationFailure>), description: "Bad request.")]
         public async Task<IActionResult> CreateGuest([FromBody] GuestDto guestDto)
         {
-            var result = await _guestService.CreateGuest(guestDto);
-
-            if (result.ValidationResult == null && result.ValidationResult.Errors == null)
-                return Ok(result.Response);
-            else
-                return NotFound(result.ValidationResult.Errors);
+            return CustomResponse(await _guestService.CreateGuest(guestDto));
         }
     }
 }

@@ -10,15 +10,16 @@ namespace HotelBooking.Domain.Models
         protected Reservation() { }
 
         public Guid GuestId { get; private set; }
+        public Guid RoomId { get; private set; }
         public DateTime CheckIn { get; private set; }
         public DateTime CheckOut { get; private set; }
-        public Room Room { get; private set; }
-        public virtual Guest Guest{get; set;}
+        public virtual Room Room { get; private set; }
+        public virtual Guest Guest { get; private set; }
 
-        public Reservation(Guid guestId, Room room, DateTime checkIn, DateTime checkOut)
+        public Reservation(Guid guestId, DateTime checkIn, DateTime checkOut)
         {
             GuestId = guestId;
-            Room = room;
+            RoomId = new Guid("539161dd-0ac5-4222-a410-24fbaf7dc70f");
             CheckIn = checkIn;
             CheckOut = checkOut;
         }
@@ -28,15 +29,22 @@ namespace HotelBooking.Domain.Models
             ValidationResult = new ReservationValidation().Validate(this);
             return ValidationResult.IsValid;
         }
+
+        public void UpdateCheckin(DateTime newCheckin)
+        {
+            CheckIn = newCheckin;
+        }
+
+        public void UpdateCheckout(DateTime newCheckout)
+        {
+            CheckIn = newCheckout;
+        }
     }
 
     public class ReservationValidation : AbstractValidator<Reservation>
     {
         public ReservationValidation()
         {
-            RuleFor(r => r.Room)
-              .NotNull()
-              .WithMessage("Room must be selected.");
 
             RuleFor(r => r.CheckOut.Subtract(r.CheckIn).Days)
               .LessThanOrEqualTo(3)

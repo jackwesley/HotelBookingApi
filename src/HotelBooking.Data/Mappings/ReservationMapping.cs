@@ -8,7 +8,7 @@ namespace HotelBooking.Data.Mappings
     {
         public void Configure(EntityTypeBuilder<Reservation> builder)
         {
-            builder.HasKey(r => r.Id);
+            builder.HasKey(r => new { r.Id, r.GuestId, r.RoomId, r.CheckIn});
 
             builder.Property(r => r.CheckIn)
                 .IsRequired()
@@ -20,7 +20,7 @@ namespace HotelBooking.Data.Mappings
 
 
             builder.HasOne(x => x.Guest)
-                .WithOne(y => y.Reservation);
+                .WithMany(y => y.Reservations);
 
             builder.HasOne(x => x.Room);
 

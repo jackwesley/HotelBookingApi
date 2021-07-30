@@ -1,7 +1,7 @@
 ﻿using FluentValidation.Results;
 using System.Text.Json.Serialization;
 
-namespace HotelBooking.Application.DTOs
+namespace HotelBooking.Core.DomainObjects
 {
     public class ResponseResult
     {

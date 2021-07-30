@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using HotelBooking.Core.DomainObjects;
+using System.Collections.Generic;
 
 namespace HotelBooking.Domain.Models
 {
@@ -20,7 +21,7 @@ namespace HotelBooking.Domain.Models
         public string Email { get; private set; }
         public string Phone { get; private set; }
 
-        public virtual Reservation Reservation { get; set; }
+        public virtual List<Reservation> Reservations { get; set; }
 
         public override bool IsValid()
         {

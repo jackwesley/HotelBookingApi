@@ -4,14 +4,16 @@ using HotelBooking.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HotelBooking.Data.Migrations
 {
     [DbContext(typeof(ReservationContext))]
-    partial class ReservationContextModelSnapshot : ModelSnapshot
+    [Migration("20210729222937_AddingIdRoomInReservation")]
+    partial class AddingIdRoomInReservation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,12 +51,7 @@ namespace HotelBooking.Data.Migrations
             modelBuilder.Entity("HotelBooking.Domain.Models.Reservation", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("GuestId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("RoomId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CheckIn")
@@ -63,9 +60,16 @@ namespace HotelBooking.Data.Migrations
                     b.Property<DateTime>("CheckOut")
                         .HasColumnType("datetime");
 
-                    b.HasKey("Id", "GuestId", "RoomId", "CheckIn");
+                    b.Property<Guid>("GuestId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.HasIndex("GuestId");
+                    b.Property<Guid>("RoomId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GuestId")
+                        .IsUnique();
 
                     b.HasIndex("RoomId");
 
@@ -89,8 +93,8 @@ namespace HotelBooking.Data.Migrations
             modelBuilder.Entity("HotelBooking.Domain.Models.Reservation", b =>
                 {
                     b.HasOne("HotelBooking.Domain.Models.Guest", "Guest")
-                        .WithMany("Reservations")
-                        .HasForeignKey("GuestId")
+                        .WithOne("Reservation")
+                        .HasForeignKey("HotelBooking.Domain.Models.Reservation", "GuestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -107,7 +111,7 @@ namespace HotelBooking.Data.Migrations
 
             modelBuilder.Entity("HotelBooking.Domain.Models.Guest", b =>
                 {
-                    b.Navigation("Reservations");
+                    b.Navigation("Reservation");
                 });
 #pragma warning restore 612, 618
         }

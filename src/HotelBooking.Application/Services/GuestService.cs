@@ -1,6 +1,7 @@
 ﻿using FluentValidation.Results;
 using HotelBooking.Application.DTOs;
 using HotelBooking.Application.Services.Interfaces;
+using HotelBooking.Core.DomainObjects;
 using HotelBooking.Domain.Models;
 using HotelBooking.Domain.Repositories;
 using System.Threading.Tasks;
@@ -41,7 +42,7 @@ namespace HotelBooking.Application.Services
 
             if (guest != null)
             {
-                response.Response = new GuestDto(guest.Name, guest.Document, guest.Email, guest.Phone);
+                response.Response = new GuestDto(guest.Id, guest.Name, guest.Document, guest.Email, guest.Phone);
                 return response;
             }
             else
