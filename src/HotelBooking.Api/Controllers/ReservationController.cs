@@ -17,24 +17,24 @@ namespace HotelBooking.Api.Controllers
         }
 
         [HttpGet]
-        [Route("reservation/check-availability-for-current-month")]
-        public async Task<IActionResult> AvailabilityForCurrentMonth()
+        [Route("reservation/check-availability")]
+        public IActionResult AvailabilityForCurrentMonth(DateTime checkIn, DateTime checkOut)
         {
-            return CustomResponse(await _reservationService.CheckAvailabilityForTheMonth());
+            return CustomResponse(_reservationService.CheckAvailability(checkIn, checkOut));
         }
 
         [HttpPost]
         [Route("reservation/place-reservation")]
         public async Task<IActionResult> PlaceReservation([FromBody] ReservationDto reservationDto)
         {
-            return CustomResponse(await _reservationService.PlaceReservation(reservationDto));
+            return CustomResponse(await _reservationService.PlaceReservationAsync(reservationDto));
         }
 
         [HttpDelete]
         [Route("reservation/cancel-reservation")]
-        public async Task<IActionResult> CancelReservation(Guid userId, DateTime checkInDate)
+        public async Task<IActionResult> CancelReservation(Guid userId, DateTime checkIn)
         {
-            return CustomResponse(await _reservationService.CancelReservation(userId, checkInDate));
+            return CustomResponse(await _reservationService.CancelReservation(userId, checkIn));
         }
 
         [HttpPut]

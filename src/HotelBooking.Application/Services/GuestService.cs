@@ -34,7 +34,7 @@ namespace HotelBooking.Application.Services
                     await _guestRepository.AddGuest(guestEntity);
                     await _guestRepository.UnitOfWork.Commit();
 
-                    return new ResponseResult(guest, HttpStatusCode.OK, null);
+                    return ResponseResultFactory.CreateResponseResultSuccess (HttpStatusCode.OK, guest);
                 }
 
                 return ResponseResultFactory.CreateResponseWithValidationResultAlreadySet(HttpStatusCode.BadRequest, guestEntity.ValidationResult);

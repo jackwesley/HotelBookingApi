@@ -21,7 +21,7 @@ namespace HotelBooking.Domain.Models
             GuestId = guestId;
             RoomId = new Guid("539161dd-0ac5-4222-a410-24fbaf7dc70f");
             CheckIn = checkIn;
-            CheckOut = checkOut;
+            CheckOut = checkOut.AddHours(23).AddMinutes(59).AddSeconds(59);
         }
 
         public override bool IsValid()
@@ -37,7 +37,7 @@ namespace HotelBooking.Domain.Models
 
         public void UpdateCheckout(DateTime newCheckout)
         {
-            CheckIn = newCheckout;
+            CheckOut = newCheckout.AddHours(23).AddMinutes(59).AddSeconds(59);
         }
     }
 
@@ -45,6 +45,9 @@ namespace HotelBooking.Domain.Models
     {
         public ReservationValidation()
         {
+            RuleFor(r => r.CheckIn)
+              .LessThan(r => r.CheckOut)
+              .WithMessage("Checkin can not be greater than Checkout.");
 
             RuleFor(r => r.CheckOut.Subtract(r.CheckIn).Days)
               .LessThanOrEqualTo(3)

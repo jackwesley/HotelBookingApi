@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31424.327
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{22B65F61-C437-49CA-BAA8-8E8723E7AC9C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01-API", "01-API", "{22B65F61-C437-49CA-BAA8-8E8723E7AC9C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{4A37DEA8-C97A-45A9-B0A5-B3763DF204C4}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03-Domain", "03-Domain", "{4A37DEA8-C97A-45A9-B0A5-B3763DF204C4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infra", "Infra", "{27091BDE-7335-45C1-999B-DFC2D9AB0238}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04-Infra", "04-Infra", "{27091BDE-7335-45C1-999B-DFC2D9AB0238}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HotelBooking.Api", "src\HotelBooking.Api\HotelBooking.Api.csproj", "{1DEE0C3D-ECD2-41BF-8CEB-A51F09B30C4E}"
 EndProject
@@ -17,17 +17,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HotelBooking.CrossCutting",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HotelBooking.Data", "src\HotelBooking.Data\HotelBooking.Data.csproj", "{E0A9FA21-DD3E-4DC4-B435-CE651FAC5315}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{2DCCB93D-18EC-4D8C-898C-23DFF673F916}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "05-Tests", "05-Tests", "{2DCCB93D-18EC-4D8C-898C-23DFF673F916}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HotelBooking.Tests", "tests\HotelBooking.Tests\HotelBooking.Tests.csproj", "{E033C0C3-D379-4CE5-A3C2-3785E597E89D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{65C32042-A8B5-40FE-9F0B-E39607ABC40C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Core", "00-Core", "{65C32042-A8B5-40FE-9F0B-E39607ABC40C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HotelBooking.Core", "src\HotelBooking.Core\HotelBooking.Core.csproj", "{BF4CDBB7-C1F6-48F8-90C7-07A5BA8B959E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{055A1BB5-DDB9-49D3-8011-DFF7F810DDC5}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02-Application", "02-Application", "{055A1BB5-DDB9-49D3-8011-DFF7F810DDC5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelBooking.Application", "src\HotelBooking.Application\HotelBooking.Application.csproj", "{718533A8-4B42-4776-94C8-91D3BB432D6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HotelBooking.Application", "src\HotelBooking.Application\HotelBooking.Application.csproj", "{718533A8-4B42-4776-94C8-91D3BB432D6F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

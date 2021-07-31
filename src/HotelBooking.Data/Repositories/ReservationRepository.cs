@@ -58,6 +58,13 @@ namespace HotelBooking.Data.Repositories
               .ToListAsync(); ;
         }
 
+        public bool CheckAvailabilyForDates(List<DateTime> datesToCheck)
+        {
+            var checkins = _context.Reservations.Where(x => datesToCheck.Contains(x.CheckIn.Date) || datesToCheck.Contains(x.CheckOut.Date));
+
+            return checkins.ToList().Count == 0;
+        }
+
         public void UpdateReservation(Reservation reservation)
         {
             _context.Reservations.Update(reservation);
@@ -67,5 +74,7 @@ namespace HotelBooking.Data.Repositories
         {
             _context.Dispose();
         }
+
+        
     }
 }

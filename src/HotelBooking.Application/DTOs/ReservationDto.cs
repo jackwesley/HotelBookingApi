@@ -12,12 +12,15 @@ namespace HotelBooking.Application.DTOs
             CheckOut = checkOut;
         }
 
+        [Required]
         public Guid GuestId { get; set; }
 
+        [Required]
         [DataType(DataType.Date)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
         public DateTime CheckIn { get; set; }
 
+        [Required]
         [DataType(DataType.Date)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
         public DateTime CheckOut { get; set; }

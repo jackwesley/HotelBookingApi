@@ -9,18 +9,18 @@ namespace HotelBooking.Application.DTOs
 
         [DataType(DataType.Date)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
-        public DateTime CurrentCheckInDate { get; set; }
+        public DateTime CurrentCheckIn { get; set; }
 
         [DataType(DataType.Date)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
-        public DateTime NewCheckinDate { get; set; }
+        public DateTime NewCheckIn { get; set; }
 
         [DataType(DataType.Date)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
-        public DateTime CurrentCheckOutDate { get; set; }
+        public DateTime CurrentCheckOut { get; set; }
 
         [DataType(DataType.Date)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
-        public DateTime NewCheckoutDate { get; set; }
+        public DateTime NewCheckOut { get; set; }
     }
 }

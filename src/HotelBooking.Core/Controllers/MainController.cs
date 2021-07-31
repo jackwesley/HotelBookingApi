@@ -1,6 +1,7 @@
 ﻿using HotelBooking.Core.DomainObjects;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using System.Net;
 
 namespace HotelBooking.Core.Controllers
 {
@@ -13,7 +14,9 @@ namespace HotelBooking.Core.Controllers
 
         protected IActionResult CustomResponse(ResponseResult result = null)
         {
-            return StatusCode((int)result.StatusCode, result);
+            HttpStatusCode statusCode = result != null ? result.StatusCode : HttpStatusCode.InternalServerError;
+            
+            return StatusCode((int)statusCode, result);
         }
     }
 }

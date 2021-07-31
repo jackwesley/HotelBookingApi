@@ -1,7 +1,7 @@
 ﻿using HotelBooking.Domain.Models;
 using Xunit;
 
-namespace HotelBooking.Tests
+namespace HotelBooking.Tests.Domain
 {
     public class GuesTests
     {

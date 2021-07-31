@@ -2,7 +2,7 @@ using HotelBooking.Domain.Models;
 using System;
 using Xunit;
 
-namespace HotelBooking.Tests
+namespace HotelBooking.Tests.Domain
 {
     public class ReservationTests
     {
