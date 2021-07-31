@@ -38,3 +38,6 @@ After the confiration mentioned above, open the console, choose the project Hote
 This API can be used directly via Swagger, in link mentioned before.
 It is possible to use programs like postman to call the API as well.
 When calling the endpoints, be sure to create an Guest and keep its Id, the others endpoints will need it.
+The link of the postman collection is above can be used. It contais an example for each endpoint.
+
+* Observation: All Data fields must be provided in format YYYY/MM/DD
