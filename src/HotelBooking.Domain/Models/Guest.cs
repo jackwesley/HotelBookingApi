@@ -36,22 +36,18 @@ namespace HotelBooking.Domain.Models
         {
             RuleFor(r => r.Name)
              .NotEmpty()
-             .NotNull()
              .WithMessage("Name must not be null");
 
             RuleFor(r => r.Document)
              .NotEmpty()
-             .NotNull()
              .WithMessage("Document must not be null");
 
             RuleFor(r => r.Email)
              .NotEmpty()
-             .NotNull()
              .WithMessage("Email must not be null");
 
             RuleFor(r => r.Phone)
              .NotEmpty()
-             .NotNull()
              .WithMessage("Phone must not be null");
         }
     }
