@@ -22,7 +22,7 @@ After the confiration mentioned above, open the console, choose the project Hote
 
 ![image](https://user-images.githubusercontent.com/16781964/127750238-402eaf5b-ecaa-485f-91ae-d22a3c52cd63.png)
 
-##Tools utilized
+## Tools utilized
 1. Swagger for the API documentation
 2. Entity Framework Core to connect with DataBase
 3. Fluent Validation for creation of validation for Domain Classes
