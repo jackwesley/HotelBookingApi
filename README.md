@@ -32,10 +32,9 @@ After the confiration mentioned above, open the console, choose the project Hote
 
 ## Links of the Application
 1. Swagger -> https://localhost:44331/swagger/index.html
+2. Postman Collection -> https://www.getpostman.com/collections/589218b4bae11604d3f7
 
 ## How to use the API.
 This API can be used directly via Swagger, in link mentioned before.
 It is possible to use programs like postman to call the API as well.
 When calling the endpoints, be sure to create an Guest and keep its Id, the others endpoints will need it.
-
-The project folter contains a 
