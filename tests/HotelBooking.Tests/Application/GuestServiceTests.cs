@@ -35,7 +35,7 @@ namespace HotelBooking.Tests.Application
             guestEntity.Name = string.Empty;
 
             //Act
-            var response = await _service.CreateGuest(guestEntity);
+            var response = await _service.CreateGuestAsync(guestEntity);
 
             //Assert
             response.Should().NotBeNull();
@@ -53,7 +53,7 @@ namespace HotelBooking.Tests.Application
                 .ReturnsAsync(true);
 
             //Act
-            var response = await _service.CreateGuest(guestEntity);
+            var response = await _service.CreateGuestAsync(guestEntity);
 
             //Assert
             response.Should().NotBeNull();
@@ -71,7 +71,7 @@ namespace HotelBooking.Tests.Application
                 .Throws(new Exception("error saving guest"));
 
             //Act
-            var response = await _service.CreateGuest(guestEntity);
+            var response = await _service.CreateGuestAsync(guestEntity);
 
             //Assert
             response.Should().NotBeNull();

@@ -23,19 +23,19 @@ namespace HotelBooking.Api.Controllers
         [Route("guest/{email}")]
         [SwaggerResponse(statusCode: 200, type: typeof(GuestDto), description: "Data from Guest.")]
         [SwaggerResponse(statusCode: 400, type: typeof(IEnumerable<string>), description: "Bad request.")]
-        public async Task<IActionResult> GetGuest(string email)
+        public async Task<IActionResult> GetGuestAsync(string email)
         {
 
-            return CustomResponse(await _guestService.GetGuestByEmail(email));
+            return CustomResponse(await _guestService.GetGuestByEmailAsync(email));
         }
 
         [HttpPost]
         [Route("guest")]
         [SwaggerResponse(statusCode: 200, type: typeof(GuestDto), description: "Data from Guest.")]
         [SwaggerResponse(statusCode: 400, type: typeof(IEnumerable<string>), description: "Bad request.")]
-        public async Task<IActionResult> CreateGuest([FromBody] GuestDto guestDto)
+        public async Task<IActionResult> CreateGuestAsync([FromBody] GuestDto guestDto)
         {
-            return CustomResponse(await _guestService.CreateGuest(guestDto));
+            return CustomResponse(await _guestService.CreateGuestAsync(guestDto));
         }
     }
 }

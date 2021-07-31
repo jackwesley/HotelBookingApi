@@ -22,11 +22,9 @@ namespace HotelBooking.Application.Services
             _logger = logger;
         }
 
-        public async Task<ResponseResult> CreateGuest(GuestDto guest)
+        public async Task<ResponseResult> CreateGuestAsync(GuestDto guest)
         {
-
             var guestEntity = new Guest(guest.Name, guest.Document, guest.Email, guest.Phone);
-
             try
             {
                 if (guestEntity.IsValid())
@@ -44,10 +42,9 @@ namespace HotelBooking.Application.Services
                 _logger.LogError(ex, "Error trying to create Guest");
                 return ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.InternalServerError, "Server error! Please contact administrators.");
             }
-            
         }
 
-        public async Task<ResponseResult> GetGuestByEmail(string email)
+        public async Task<ResponseResult> GetGuestByEmailAsync(string email)
         {
             var guest = await _guestRepository.GetByEmail(email);
 
@@ -69,7 +66,6 @@ namespace HotelBooking.Application.Services
             }
             catch (Exception ex)
             {
-
                 _logger.LogError(ex, "Error trying to get Guest");
                 return ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.InternalServerError, "Server error! Please contact administrators.");
             }

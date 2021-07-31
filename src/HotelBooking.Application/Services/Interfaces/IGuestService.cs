@@ -6,8 +6,8 @@ namespace HotelBooking.Application.Services.Interfaces
 {
     public interface IGuestService
     {
-        Task<ResponseResult> CreateGuest(GuestDto guest);
+        Task<ResponseResult> CreateGuestAsync(GuestDto guest);
 
-        Task<ResponseResult> GetGuestByEmail(string email);
+        Task<ResponseResult> GetGuestByEmailAsync(string email);
     }
 }
