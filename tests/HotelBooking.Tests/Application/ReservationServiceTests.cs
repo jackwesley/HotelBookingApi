@@ -276,6 +276,7 @@ namespace HotelBooking.Tests.Application
         }
         #endregion
 
+        #region CancelReservationTests
         [Fact]
         public async Task CancelReservation_WithReservationExisting_ShouldReturn_ModfyDoneWithStatusOk()
         {
@@ -395,6 +396,14 @@ namespace HotelBooking.Tests.Application
             response.Should().NotBeNull();
             response.Should().BeOfType(typeof(ResponseResult));
             response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+            _logger.Verify(l => l.Log(
+              LogLevel.Error,
+              It.IsAny<EventId>(),
+              It.IsAny<It.IsAnyType>(),
+              It.IsAny<Exception>(),
+              (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
+              Times.Exactly(1));
         }
+        #endregion
     }
 }

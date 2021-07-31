@@ -22,7 +22,7 @@ namespace HotelBooking.Api.Controllers
         [HttpGet]
         [Route("guest/{email}")]
         [SwaggerResponse(statusCode: 200, type: typeof(GuestDto), description: "Data from Guest.")]
-        [SwaggerResponse(statusCode: 400, type: typeof(List<ValidationFailure>), description: "Bad request.")]
+        [SwaggerResponse(statusCode: 400, type: typeof(IEnumerable<string>), description: "Bad request.")]
         public async Task<IActionResult> GetGuest(string email)
         {
 
@@ -32,7 +32,7 @@ namespace HotelBooking.Api.Controllers
         [HttpPost]
         [Route("guest")]
         [SwaggerResponse(statusCode: 200, type: typeof(GuestDto), description: "Data from Guest.")]
-        [SwaggerResponse(statusCode: 400, type: typeof(List<ValidationFailure>), description: "Bad request.")]
+        [SwaggerResponse(statusCode: 400, type: typeof(IEnumerable<string>), description: "Bad request.")]
         public async Task<IActionResult> CreateGuest([FromBody] GuestDto guestDto)
         {
             return CustomResponse(await _guestService.CreateGuest(guestDto));
