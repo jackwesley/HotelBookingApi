@@ -27,7 +27,7 @@ namespace HotelBooking.Data
         }
 
 
-        public async Task<bool> Commit()
+        public async Task<bool> CommitAsync()
         {
             return await base.SaveChangesAsync() > 0;
         }

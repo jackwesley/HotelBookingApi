@@ -36,7 +36,7 @@ namespace HotelBooking.Api.Controllers
         [SwaggerResponse(statusCode: 404, type: typeof(ResponseResult), description: "Not found.")]
         [SwaggerResponse(statusCode: 500, type: typeof(IEnumerable<string>), description: "Internal server error.")]
 
-        public async Task<IActionResult> PlaceReservation([FromBody] ReservationDto reservationDto)
+        public async Task<IActionResult> PlaceReservationAsync([FromBody] ReservationDto reservationDto)
         {
             return CustomResponse(await _reservationService.PlaceReservationAsync(reservationDto));
         }
@@ -48,9 +48,9 @@ namespace HotelBooking.Api.Controllers
         [SwaggerResponse(statusCode: 404, type: typeof(ResponseResult), description: "Not found.")]
         [SwaggerResponse(statusCode: 500, type: typeof(IEnumerable<string>), description: "Internal server error.")]
 
-        public async Task<IActionResult> CancelReservation(Guid userId, DateTime checkIn)
+        public async Task<IActionResult> CancelReservationAsync(Guid userId, DateTime checkIn)
         {
-            return CustomResponse(await _reservationService.CancelReservation(userId, checkIn));
+            return CustomResponse(await _reservationService.CancelReservationAsync(userId, checkIn));
         }
 
         [HttpPut]
@@ -59,9 +59,9 @@ namespace HotelBooking.Api.Controllers
         [SwaggerResponse(statusCode: 400, type: typeof(IEnumerable<string>), description: "Bad request.")]
         [SwaggerResponse(statusCode: 404, type: typeof(ResponseResult), description: "Not found.")]
         [SwaggerResponse(statusCode: 500, type: typeof(IEnumerable<string>), description: "Internal server error.")]
-        public async Task<IActionResult> UpdateReservation([FromBody] UpdateReservationDto updateReservationDto)
+        public async Task<IActionResult> UpdateReservationAsync([FromBody] UpdateReservationDto updateReservationDto)
         {
-            return CustomResponse(await _reservationService.ModifyReservation(updateReservationDto));
+            return CustomResponse(await _reservationService.ModifyReservationAsync(updateReservationDto));
         }
     }
 }

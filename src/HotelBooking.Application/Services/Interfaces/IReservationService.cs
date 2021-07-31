@@ -9,8 +9,8 @@ namespace HotelBooking.Application.Services.Interfaces
     {
         ResponseResult CheckAvailability(DateTime checkIn, DateTime checkOut);
         Task<ResponseResult> PlaceReservationAsync(ReservationDto reservation);
-        Task<ResponseResult> CancelReservation(Guid guestId, DateTime checkIn);
-        Task<ResponseResult> ModifyReservation(UpdateReservationDto updateReservationDto);
+        Task<ResponseResult> CancelReservationAsync(Guid guestId, DateTime checkIn);
+        Task<ResponseResult> ModifyReservationAsync(UpdateReservationDto updateReservationDto);
 
     }
 }

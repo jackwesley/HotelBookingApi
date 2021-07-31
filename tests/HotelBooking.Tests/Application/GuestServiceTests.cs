@@ -49,7 +49,7 @@ namespace HotelBooking.Tests.Application
             //Arrange
             var guestEntity = _fixture.Build<GuestDto>().Create();
             
-            _guestRepository.Setup(x => x.UnitOfWork.Commit())
+            _guestRepository.Setup(x => x.UnitOfWork.CommitAsync())
                 .ReturnsAsync(true);
 
             //Act
@@ -67,7 +67,7 @@ namespace HotelBooking.Tests.Application
             //Arrange
             var guestEntity = _fixture.Build<GuestDto>().Create();
 
-            _guestRepository.Setup(x => x.UnitOfWork.Commit())
+            _guestRepository.Setup(x => x.UnitOfWork.CommitAsync())
                 .Throws(new Exception("error saving guest"));
 
             //Act

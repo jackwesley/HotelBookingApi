@@ -112,7 +112,7 @@ namespace HotelBooking.Tests.Application
 
             _reservationRepository.Setup(x => x.CheckAvailabilyForDates(It.IsAny<List<DateTime>>()))
                 .Returns(true);
-            _reservationRepository.Setup(x => x.UnitOfWork.Commit())
+            _reservationRepository.Setup(x => x.UnitOfWork.CommitAsync())
                .ReturnsAsync(true);
 
             //Act
@@ -134,7 +134,7 @@ namespace HotelBooking.Tests.Application
 
             _reservationRepository.Setup(x => x.CheckAvailabilyForDates(It.IsAny<List<DateTime>>()))
                 .Returns(false);
-            _reservationRepository.Setup(x => x.UnitOfWork.Commit())
+            _reservationRepository.Setup(x => x.UnitOfWork.CommitAsync())
                .ReturnsAsync(true);
 
             //Act
@@ -158,7 +158,7 @@ namespace HotelBooking.Tests.Application
 
             _reservationRepository.Setup(x => x.CheckAvailabilyForDates(It.IsAny<List<DateTime>>()))
                 .Returns(true);
-            _reservationRepository.Setup(x => x.UnitOfWork.Commit())
+            _reservationRepository.Setup(x => x.UnitOfWork.CommitAsync())
                .Throws(new Exception());
 
             //Act
@@ -193,14 +193,14 @@ namespace HotelBooking.Tests.Application
 
             _reservationRepository.Setup(x => x.CheckAvailabilyForDates(It.IsAny<List<DateTime>>()))
                 .Returns(true);
-            _reservationRepository.Setup(x => x.UnitOfWork.Commit())
+            _reservationRepository.Setup(x => x.UnitOfWork.CommitAsync())
                .ReturnsAsync(true);
 
             _reservationRepository.Setup(x => x.GetByGuestIdAndCheckinAsync(updateReservationDto.GuestId, updateReservationDto.CurrentCheckIn))
                 .ReturnsAsync(reservation);
 
             //Act
-            var response = await _service.ModifyReservation(updateReservationDto);
+            var response = await _service.ModifyReservationAsync(updateReservationDto);
             var reservationResponse = response.Response as ReservationDto;
             //Assert
             response.Should().NotBeNull();
@@ -224,14 +224,14 @@ namespace HotelBooking.Tests.Application
 
             _reservationRepository.Setup(x => x.CheckAvailabilyForDates(It.IsAny<List<DateTime>>()))
                 .Returns(true);
-            _reservationRepository.Setup(x => x.UnitOfWork.Commit())
+            _reservationRepository.Setup(x => x.UnitOfWork.CommitAsync())
                .ReturnsAsync(false);
 
             _reservationRepository.Setup(x => x.GetByGuestIdAndCheckinAsync(updateReservationDto.GuestId, updateReservationDto.CurrentCheckIn))
                 .ReturnsAsync(reservation);
 
             //Act
-            var response = await _service.ModifyReservation(updateReservationDto);
+            var response = await _service.ModifyReservationAsync(updateReservationDto);
             
             //Assert
             response.Should().NotBeNull();
@@ -253,14 +253,14 @@ namespace HotelBooking.Tests.Application
 
             _reservationRepository.Setup(x => x.CheckAvailabilyForDates(It.IsAny<List<DateTime>>()))
                 .Returns(true);
-            _reservationRepository.Setup(x => x.UnitOfWork.Commit())
+            _reservationRepository.Setup(x => x.UnitOfWork.CommitAsync())
                .Throws(new Exception());
 
             _reservationRepository.Setup(x => x.GetByGuestIdAndCheckinAsync(updateReservationDto.GuestId, updateReservationDto.CurrentCheckIn))
                 .ReturnsAsync(reservation);
 
             //Act
-            var response = await _service.ModifyReservation(updateReservationDto);
+            var response = await _service.ModifyReservationAsync(updateReservationDto);
 
             //Assert
             response.Should().NotBeNull();
@@ -285,14 +285,14 @@ namespace HotelBooking.Tests.Application
             var checkin = DateTime.Now;
             var reservation = new Reservation(guestId, DateTime.Now, DateTime.Now.AddDays(2));
 
-            _reservationRepository.Setup(x => x.UnitOfWork.Commit())
+            _reservationRepository.Setup(x => x.UnitOfWork.CommitAsync())
               .ReturnsAsync(true);
 
             _reservationRepository.Setup(x => x.GetByGuestIdAndCheckinAsync(guestId, checkin))
                 .ReturnsAsync(reservation);
 
             //Act
-            var response = await _service.CancelReservation(guestId, checkin);
+            var response = await _service.CancelReservationAsync(guestId, checkin);
             var reservationResponse = response.Response as string;
 
             //Assert
@@ -310,14 +310,14 @@ namespace HotelBooking.Tests.Application
             var checkin = DateTime.Now;
             var reservation = new Reservation(guestId, DateTime.Now, DateTime.Now.AddDays(2));
 
-            _reservationRepository.Setup(x => x.UnitOfWork.Commit())
+            _reservationRepository.Setup(x => x.UnitOfWork.CommitAsync())
               .ReturnsAsync(true);
 
             _reservationRepository.Setup(x => x.GetByGuestIdAndCheckinAsync(guestId, checkin))
                 .ReturnsAsync(reservation);
 
             //Act
-            var response = await _service.CancelReservation(guestId, checkin);
+            var response = await _service.CancelReservationAsync(guestId, checkin);
             var reservationResponse = response.Response as string;
 
             //Assert
@@ -335,14 +335,14 @@ namespace HotelBooking.Tests.Application
             Guid guestId = Guid.NewGuid();
             var checkin = DateTime.Now;
 
-            _reservationRepository.Setup(x => x.UnitOfWork.Commit())
+            _reservationRepository.Setup(x => x.UnitOfWork.CommitAsync())
               .ReturnsAsync(true);
 
             _reservationRepository.Setup(x => x.GetByGuestIdAndCheckinAsync(guestId, checkin))
                 .ReturnsAsync(null as Reservation);
 
             //Act
-            var response = await _service.CancelReservation(guestId, checkin);
+            var response = await _service.CancelReservationAsync(guestId, checkin);
             var reservationResponse = response.Response as string;
 
             //Assert
@@ -360,14 +360,14 @@ namespace HotelBooking.Tests.Application
             var checkin = DateTime.Now;
             var reservation = new Reservation(guestId, DateTime.Now, DateTime.Now.AddDays(2));
 
-            _reservationRepository.Setup(x => x.UnitOfWork.Commit())
+            _reservationRepository.Setup(x => x.UnitOfWork.CommitAsync())
               .ReturnsAsync(false);
 
             _reservationRepository.Setup(x => x.GetByGuestIdAndCheckinAsync(guestId, checkin))
                 .ReturnsAsync(reservation);
 
             //Act
-            var response = await _service.CancelReservation(guestId, checkin);
+            var response = await _service.CancelReservationAsync(guestId, checkin);
 
             //Assert
             response.Should().NotBeNull();
@@ -383,14 +383,14 @@ namespace HotelBooking.Tests.Application
             var checkin = DateTime.Now;
             var reservation = new Reservation(guestId, DateTime.Now, DateTime.Now.AddDays(2));
 
-            _reservationRepository.Setup(x => x.UnitOfWork.Commit())
+            _reservationRepository.Setup(x => x.UnitOfWork.CommitAsync())
               .Throws(new Exception());
 
             _reservationRepository.Setup(x => x.GetByGuestIdAndCheckinAsync(guestId, checkin))
                 .ReturnsAsync(reservation);
 
             //Act
-            var response = await _service.CancelReservation(guestId, checkin);
+            var response = await _service.CancelReservationAsync(guestId, checkin);
 
             //Assert
             response.Should().NotBeNull();

@@ -56,7 +56,7 @@ namespace HotelBooking.Application.Services
 
                 if (CheckAvailabilityForDates(datesToCheck))
                 {
-                    return await CreateReservation(reservationDto);
+                    return await CreateReservationAsync(reservationDto);
                 }
 
                 return ResponseResultFactory.CreateResponseResultSuccess(HttpStatusCode.OK, $"Room is NOT available for CheckIn: {reservationDto.CheckIn.ToString("yyyy-MM-dd")} and checkOut:{reservationDto.CheckOut.ToString("yyyy-MM-dd")}");
@@ -69,7 +69,7 @@ namespace HotelBooking.Application.Services
             }
         }
 
-        public async Task<ResponseResult> ModifyReservation(UpdateReservationDto updateReservationDto)
+        public async Task<ResponseResult> ModifyReservationAsync(UpdateReservationDto updateReservationDto)
         {
             try
             {
@@ -79,7 +79,7 @@ namespace HotelBooking.Application.Services
 
                 if (CheckAvailabilityForDates(datesToCheck))
                 {
-                    return await UpdateReservation(updateReservationDto);
+                    return await UpdateReservationAsync(updateReservationDto);
                 }
 
                 return ResponseResultFactory.CreateResponseResultSuccess(HttpStatusCode.OK, $"Room is NOT available for CheckIn: {updateReservationDto.NewCheckIn.ToString("yyyy-MM-dd")} and checkOut:{updateReservationDto.NewCheckOut.ToString("yyyy-MM-dd")}");
@@ -91,7 +91,7 @@ namespace HotelBooking.Application.Services
             }
         }
 
-        public async Task<ResponseResult> CancelReservation(Guid guestId, DateTime checkin)
+        public async Task<ResponseResult> CancelReservationAsync(Guid guestId, DateTime checkin)
         {
             try
             {
@@ -99,7 +99,7 @@ namespace HotelBooking.Application.Services
 
                 if (reservationToCancel != null)
                 {
-                    if (await CancelReservation(reservationToCancel))
+                    if (await CancelReservationAsync(reservationToCancel))
                     {
                         return ResponseResultFactory.CreateResponseResultSuccess(HttpStatusCode.NoContent, "Reservation canceled successfully.");
                     }
@@ -138,13 +138,13 @@ namespace HotelBooking.Application.Services
             return _reservationRepository.CheckAvailabilyForDates(listDatesToCheck);
         }
 
-        private async Task<ResponseResult> CreateReservation(ReservationDto reservationDto)
+        private async Task<ResponseResult> CreateReservationAsync(ReservationDto reservationDto)
         {
             var reservation = ReservationDtoMapper.ToReservation(reservationDto);
 
             if (reservation.IsValid())
             {
-                if (await AddReservation(reservation))
+                if (await AddReservationAsync(reservation))
                 {
                     var response = ReservationMapper.ToReservationDto(reservation);
                     return ResponseResultFactory.CreateResponseResultSuccess(HttpStatusCode.Created, response);
@@ -172,7 +172,7 @@ namespace HotelBooking.Application.Services
             return datesToCheck;
         }
 
-        private async Task<ResponseResult> UpdateReservation(UpdateReservationDto updateReservationDto)
+        private async Task<ResponseResult> UpdateReservationAsync(UpdateReservationDto updateReservationDto)
         {
 
             var reservation = await _reservationRepository.GetByGuestIdAndCheckinAsync(updateReservationDto.GuestId, updateReservationDto.CurrentCheckIn);
@@ -187,7 +187,7 @@ namespace HotelBooking.Application.Services
 
             if (reservation.IsValid())
             {
-                if (await UpdateReservation(reservation))
+                if (await UpdateReservationAsync(reservation))
                 {
                     var response = ReservationMapper.ToReservationDto(reservation);
                     return ResponseResultFactory.CreateResponseResultSuccess(HttpStatusCode.OK, response);
@@ -201,22 +201,22 @@ namespace HotelBooking.Application.Services
             return ResponseResultFactory.CreateResponseWithValidationResultAlreadySet(HttpStatusCode.OK, reservation.ValidationResult);
         }
 
-        private async Task<bool> AddReservation(Reservation reservation)
+        private async Task<bool> AddReservationAsync(Reservation reservation)
         {
             await _reservationRepository.AddReservationAsync(reservation);
-            return await _reservationRepository.UnitOfWork.Commit();
+            return await _reservationRepository.UnitOfWork.CommitAsync();
         }
 
-        private async Task<bool> UpdateReservation(Reservation reservation)
+        private async Task<bool> UpdateReservationAsync(Reservation reservation)
         {
             _reservationRepository.UpdateReservation(reservation);
-            return await _reservationRepository.UnitOfWork.Commit();
+            return await _reservationRepository.UnitOfWork.CommitAsync();
         }
 
-        private async Task<bool> CancelReservation(Reservation reservation)
+        private async Task<bool> CancelReservationAsync(Reservation reservation)
         {
             _reservationRepository.CancelReservation(reservation);
-            return await _reservationRepository.UnitOfWork.Commit();
+            return await _reservationRepository.UnitOfWork.CommitAsync();
         }
     }
 }

@@ -30,7 +30,7 @@ namespace HotelBooking.Application.Services
                 if (guestEntity.IsValid())
                 {
                     await _guestRepository.AddGuest(guestEntity);
-                    await _guestRepository.UnitOfWork.Commit();
+                    await _guestRepository.UnitOfWork.CommitAsync();
 
                     return ResponseResultFactory.CreateResponseResultSuccess (HttpStatusCode.OK, guest);
                 }
