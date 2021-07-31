@@ -45,4 +45,4 @@ The link of the postman collection is above can be used. It contais an example f
 ## Architecture proposal
 ![image](https://user-images.githubusercontent.com/16781964/127753971-801e54fe-696d-43e7-9471-bb0e6990f07e.png)
 
-It consist in publishing the Rest API and the database SQL Server in containers utilizing Kubernetes with HPA(Horizontal Pod Autoscaler). 
+It consists of publishing the Rest API and the database SQL Server in containers utilizing Kubernetes with HPA(Horizontal Pod Autoscaler).
