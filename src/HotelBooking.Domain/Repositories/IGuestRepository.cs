@@ -7,8 +7,8 @@ namespace HotelBooking.Domain.Repositories
 {
     public interface IGuestRepository : IRepository<Guest>
     {
-        Task<Guest> GetByEmail(string guestId);
+        Task<Guest> GetByEmailAsync(string guestId);
 
-        Task AddGuest(Guest guest);
+        Task AddGuestAsync(Guest guest);
     }
 }

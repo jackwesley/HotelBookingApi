@@ -31,7 +31,7 @@ namespace HotelBooking.Api.Controllers
 
         [HttpPost]
         [Route("guest")]
-        [SwaggerResponse(statusCode: 200, type: typeof(GuestDto), description: "Data from Guest.")]
+        [SwaggerResponse(statusCode: 201, type: typeof(GuestDto), description: "Data from Guest.")]
         [SwaggerResponse(statusCode: 400, type: typeof(IEnumerable<string>), description: "Bad request.")]
         public async Task<IActionResult> CreateGuestAsync([FromBody] GuestDto guestDto)
         {

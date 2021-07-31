@@ -44,7 +44,7 @@ namespace HotelBooking.Tests.Application
         }
 
         [Fact]
-        public async Task CreateGuest_WithValidData_ShouldReturnResponseResultWithBadRequest()
+        public async Task CreateGuest_WithValidData_ShouldReturnResponseCreated()
         {
             //Arrange
             var guestEntity = _fixture.Build<GuestDto>().Create();
@@ -58,7 +58,25 @@ namespace HotelBooking.Tests.Application
             //Assert
             response.Should().NotBeNull();
             response.Should().BeOfType(typeof(ResponseResult));
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+        }
+
+        [Fact]
+        public async Task CreateGuest_WithValidDataAndUOWReturningFalse_ShouldReturnInternalServerError()
+        {
+            //Arrange
+            var guestEntity = _fixture.Build<GuestDto>().Create();
+
+            _guestRepository.Setup(x => x.UnitOfWork.CommitAsync())
+                .ReturnsAsync(false);
+
+            //Act
+            var response = await _service.CreateGuestAsync(guestEntity);
+
+            //Assert
+            response.Should().NotBeNull();
+            response.Should().BeOfType(typeof(ResponseResult));
+            response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
         }
 
         [Fact]

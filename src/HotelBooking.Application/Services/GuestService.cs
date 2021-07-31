@@ -25,14 +25,19 @@ namespace HotelBooking.Application.Services
         public async Task<ResponseResult> CreateGuestAsync(GuestDto guest)
         {
             var guestEntity = new Guest(guest.Name, guest.Document, guest.Email, guest.Phone);
+            
             try
             {
                 if (guestEntity.IsValid())
                 {
-                    await _guestRepository.AddGuest(guestEntity);
-                    await _guestRepository.UnitOfWork.CommitAsync();
 
-                    return ResponseResultFactory.CreateResponseResultSuccess (HttpStatusCode.OK, guest);
+                    if (await CreateGuestAsync(guestEntity))
+                    {
+                        guest.Id = guestEntity.Id;
+                        return ResponseResultFactory.CreateResponseResultSuccess(HttpStatusCode.Created, guest);
+                    }
+
+                    return ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.InternalServerError, "Server error! Please contact administrators.");
                 }
 
                 return ResponseResultFactory.CreateResponseWithValidationResultAlreadySet(HttpStatusCode.BadRequest, guestEntity.ValidationResult);
@@ -46,7 +51,7 @@ namespace HotelBooking.Application.Services
 
         public async Task<ResponseResult> GetGuestByEmailAsync(string email)
         {
-            var guest = await _guestRepository.GetByEmail(email);
+            var guest = await _guestRepository.GetByEmailAsync(email);
 
             try
             {
@@ -70,6 +75,12 @@ namespace HotelBooking.Application.Services
                 return ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.InternalServerError, "Server error! Please contact administrators.");
             }
            
+        }
+
+        private async Task<bool> CreateGuestAsync(Guest guest)
+        {
+            await _guestRepository.AddGuestAsync(guest);
+            return await _guestRepository.UnitOfWork.CommitAsync();
         }
 
         

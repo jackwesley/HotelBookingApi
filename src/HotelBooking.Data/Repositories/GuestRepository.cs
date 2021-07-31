@@ -17,12 +17,12 @@ namespace HotelBooking.Data.Repositories
 
         public IUnitOfWork UnitOfWork => _context;
 
-        public async Task<Guest> GetByEmail(string email)
+        public async Task<Guest> GetByEmailAsync(string email)
         {
             return await _context.Guests.FirstOrDefaultAsync(x => x.Email.Equals(email));
         }
 
-        public async Task AddGuest(Guest guest)
+        public async Task AddGuestAsync(Guest guest)
         {
             await _context.Guests.AddAsync(guest);
         }
