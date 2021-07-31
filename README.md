@@ -13,7 +13,6 @@ For Data Base Settings, make sure having the configuration below in the appsetti
 
 ```json
 {
-    {
   "ConnectionStrings": {
     "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=HotelBookingDB;Trusted_Connection=True;MultipleActiveResultSets=true"
   },
