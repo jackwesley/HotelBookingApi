@@ -8,15 +8,12 @@ namespace HotelBooking.Core.Controllers
     {
         protected bool ResponseHasErrors(ResponseResult responseResult)
         {
-            return (responseResult.ValidationResult != null && responseResult.ValidationResult.Errors != null && responseResult.ValidationResult.Errors.Any());
+            return (responseResult.Errors != null &&  responseResult.Errors.Any());
         }
 
-        protected ActionResult CustomResponse(ResponseResult result = null)
+        protected IActionResult CustomResponse(ResponseResult result = null)
         {
-            if (ResponseHasErrors(result))
-                return NotFound(result.ValidationResult.Errors);
-
-            return Ok(result.Response);
+            return StatusCode((int)result.StatusCode, result);
         }
     }
 }

@@ -4,6 +4,9 @@ using HotelBooking.Application.Services.Interfaces;
 using HotelBooking.Core.DomainObjects;
 using HotelBooking.Domain.Models;
 using HotelBooking.Domain.Repositories;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace HotelBooking.Application.Services
@@ -11,49 +14,68 @@ namespace HotelBooking.Application.Services
     public class GuestService : IGuestService
     {
         private readonly IGuestRepository _guestRepository;
+        private readonly ILogger<GuestService> _logger;
 
-        public GuestService(IGuestRepository guestRepository)
+        public GuestService(IGuestRepository guestRepository, ILogger<GuestService> logger)
         {
             _guestRepository = guestRepository;
+            _logger = logger;
         }
 
         public async Task<ResponseResult> CreateGuest(GuestDto guest)
         {
-            ResponseResult result = new();
+
             var guestEntity = new Guest(guest.Name, guest.Document, guest.Email, guest.Phone);
-           
-            if (guestEntity.IsValid())
+
+            try
             {
-                _guestRepository.AddGuest(guestEntity);
-                await _guestRepository.UnitOfWork.Commit();
-                result.Response = guest;
-                return result;
+                if (guestEntity.IsValid())
+                {
+                    await _guestRepository.AddGuest(guestEntity);
+                    await _guestRepository.UnitOfWork.Commit();
+
+                    return new ResponseResult(guest, HttpStatusCode.OK, null);
+                }
+
+                return ResponseResultFactory.CreateResponseWithValidationResultAlreadySet(HttpStatusCode.BadRequest, guestEntity.ValidationResult);
             }
-
-            result.ValidationResult = guestEntity.ValidationResult;
-
-            return result;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error trying to create Guest");
+                return ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.InternalServerError, "Server error! Please contact administrators.");
+            }
+            
         }
 
         public async Task<ResponseResult> GetGuestByEmail(string email)
         {
-            var response = new ResponseResult();
             var guest = await _guestRepository.GetByEmail(email);
 
-            if (guest != null)
+            try
             {
-                response.Response = new GuestDto(guest.Id, guest.Name, guest.Document, guest.Email, guest.Phone);
-                return response;
+                if (guest != null)
+                {
+                    var guestDto = new GuestDto(guest.Id, guest.Name, guest.Document, guest.Email, guest.Phone);
+                    return ResponseResultFactory.CreateResponseResultSuccess(HttpStatusCode.OK, guestDto);
+                }
+                else
+                {
+                    var validationResult = new ValidationResult();
+                    var validationFailure = new ValidationFailure("email", "Guest not found!");
+                    validationResult.Errors.Add(validationFailure);
+
+                    return ResponseResultFactory.CreateResponseWithValidationResultAlreadySet(HttpStatusCode.NotFound, validationResult);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                response.ValidationResult = new ValidationResult();
-                var validationFailure = new ValidationFailure("email", "Guest not found!");
-                response.ValidationResult.Errors.Add(validationFailure);
 
-                return response;
+                _logger.LogError(ex, "Error trying to get Guest");
+                return ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.InternalServerError, "Server error! Please contact administrators.");
             }
-
+           
         }
+
+        
     }
 }

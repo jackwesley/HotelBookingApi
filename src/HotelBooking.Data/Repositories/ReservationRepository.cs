@@ -19,63 +19,48 @@ namespace HotelBooking.Data.Repositories
 
         public IUnitOfWork UnitOfWork => _context;
 
-        public async Task AddReservation(Reservation reservation)
+        public async Task AddReservationAsync(Reservation reservation)
         {
-            var reservationExistent = await GetByGuestId(reservation.GuestId);
-
-            if (reservationExistent == null)
-                await _context.Reservations.AddAsync(reservation);
-
-            else if (reservationExistent.CheckIn.Date == reservation.CheckIn.Date)
-                return;
-            else await _context.Reservations.AddAsync(reservation);
+            await _context.Reservations.AddAsync(reservation);
         }
 
-        public async Task CancelReservation(Guid guestId, DateTime checkin)
+        public void CancelReservation(Reservation reservation)
         {
-            var reservations = await GetAllReservationsByGuestId(guestId);
-
-            if (reservations != null)
-            {
-                var reservationToCancel = reservations.Where(x => x.CheckIn == checkin).FirstOrDefault();
-                _context.Reservations.Remove(reservationToCancel);
-            }
+            _context.Reservations.Remove(reservation);
         }
 
-        public async Task<IEnumerable<Reservation>> GetAllCheckingForTheMonth()
+        public async Task<IEnumerable<Reservation>> GetAllCheckingForTheMonthAsync()
         {
             return await _context.Reservations
                 .AsNoTracking().Where(x => x.CheckIn > DateTime.Now.AddDays(1) && x.CheckOut <= DateTime.Now.AddDays(30))
                 .ToListAsync();
         }
 
-        public async Task<Reservation> GetByGuestId(Guid guestId)
+        public async Task<Reservation> GetByGuestIdAsync(Guid guestId)
         {
             return await _context.Reservations.FirstOrDefaultAsync(x => x.GuestId.Equals(guestId));
         }
 
-        public async Task<Reservation> GetByGuestIdAndCheckin(Guid guestId, DateTime checkin)
+        public async Task<Reservation> GetByGuestIdAndCheckinAsync(Guid guestId, DateTime checkin)
         {
             return await _context.Reservations.FirstOrDefaultAsync(x => x.GuestId.Equals(guestId) && x.CheckIn == checkin);
         }
 
-        public async Task<Reservation> GetByCheckin(DateTime checkin)
+        public async Task<Reservation> GetByCheckinAsync(DateTime checkin)
         {
             return await _context.Reservations.FirstOrDefaultAsync(x => x.CheckIn == checkin);
         }
 
-        public async Task<IEnumerable<Reservation>> GetAllReservationsByGuestId(Guid guestId)
+        public async Task<IEnumerable<Reservation>> GetAllReservationsByGuestIdAsync(Guid guestId)
         {
             return await _context.Reservations
               .AsNoTracking().Where(x => x.GuestId == guestId)
               .ToListAsync(); ;
         }
 
-        public async Task UpdateReservation(Reservation reservation)
+        public void UpdateReservation(Reservation reservation)
         {
-            var reservationExistent = await GetByGuestId(reservation.GuestId);
-            if (reservationExistent != null && reservationExistent.CheckIn.Date == reservation.CheckIn.Date)
-                _context.Reservations.Update(reservation);
+            _context.Reservations.Update(reservation);
         }
 
         public void Dispose()

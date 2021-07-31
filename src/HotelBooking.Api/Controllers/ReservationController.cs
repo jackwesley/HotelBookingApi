@@ -17,31 +17,31 @@ namespace HotelBooking.Api.Controllers
         }
 
         [HttpGet]
-        [Route("reservation/check-availability-for-next-30-days")]
-        public async Task<IActionResult> Availability()
+        [Route("reservation/check-availability-for-current-month")]
+        public async Task<IActionResult> AvailabilityForCurrentMonth()
         {
             return CustomResponse(await _reservationService.CheckAvailabilityForTheMonth());
         }
 
         [HttpPost]
-        [Route("reservation")]
-        public async Task<IActionResult> PlaseReservation([FromBody] ReservationDto reservationDto)
+        [Route("reservation/place-reservation")]
+        public async Task<IActionResult> PlaceReservation([FromBody] ReservationDto reservationDto)
         {
             return CustomResponse(await _reservationService.PlaceReservation(reservationDto));
         }
 
         [HttpDelete]
-        [Route("reservation")]
+        [Route("reservation/cancel-reservation")]
         public async Task<IActionResult> CancelReservation(Guid userId, DateTime checkInDate)
         {
             return CustomResponse(await _reservationService.CancelReservation(userId, checkInDate));
         }
 
         [HttpPut]
-        [Route("reservation")]
-        public async Task<IActionResult> UpdateReservation(Guid userId, DateTime oldCheckInDate, DateTime newCheckinDate, DateTime oldCheckOutDate, DateTime newCheckoutDate)
+        [Route("reservation/modify-reservation")]
+        public async Task<IActionResult> UpdateReservation([FromBody] UpdateReservationDto updateReservationDto)
         {
-            return CustomResponse(await _reservationService.ModifyReservation(userId, oldCheckInDate, newCheckinDate, oldCheckOutDate, newCheckoutDate));
+            return CustomResponse(await _reservationService.ModifyReservation(updateReservationDto));
         }
     }
 }

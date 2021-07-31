@@ -10,7 +10,7 @@ namespace HotelBooking.Application.Services.Interfaces
         Task<ResponseResult> CheckAvailabilityForTheMonth();
         Task<ResponseResult> PlaceReservation(ReservationDto reservation);
         Task<ResponseResult> CancelReservation(Guid guestId, DateTime checkIn);
-        Task<ResponseResult> ModifyReservation(Guid userId, DateTime oldCheckInDate, DateTime newCheckinDate, DateTime oldCheckOutDate, DateTime newCheckoutDate);
+        Task<ResponseResult> ModifyReservation(UpdateReservationDto updateReservationDto);
 
     }
 }

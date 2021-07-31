@@ -9,6 +9,6 @@ namespace HotelBooking.Domain.Repositories
     {
         Task<Guest> GetByEmail(string guestId);
 
-        void AddGuest(Guest guest);
+        Task AddGuest(Guest guest);
     }
 }

@@ -1,12 +1,12 @@
-﻿using FluentValidation.Results;
-using HotelBooking.Application.DTOs;
+﻿using HotelBooking.Application.DTOs;
 using HotelBooking.Application.Services.Interfaces;
 using HotelBooking.Core.DomainObjects;
 using HotelBooking.Domain.Models;
 using HotelBooking.Domain.Repositories;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace HotelBooking.Application.Services
@@ -14,100 +14,138 @@ namespace HotelBooking.Application.Services
     public class ReservationService : IReservationService
     {
         private readonly IReservationRepository _reservationRepository;
+        private readonly ILogger<ReservationService> _logger;
 
-        public ReservationService(IReservationRepository reservationRepository)
+        public ReservationService(IReservationRepository reservationRepository, ILogger<ReservationService> logger)
         {
             _reservationRepository = reservationRepository;
+            _logger = logger;
         }
 
         public async Task<ResponseResult> CheckAvailabilityForTheMonth()
         {
-            ResponseResult result = new();
-            var reservations = await _reservationRepository.GetAllCheckingForTheMonth();
-
-            if (reservations == null)
+            try
             {
-                result.Response = new { Message = $"Room have no reservations for the next 30 days" };
-                return result;
-            }
+                var reservations = await _reservationRepository.GetAllCheckingForTheMonthAsync();
 
-            CreateResultForAllReservations(result, reservations);
-            return result;
+                if (reservations == null)
+                {
+                    var response = new { Message = $"Room have no reservations for the next 30 days" };
+                    return new ResponseResult(response, HttpStatusCode.OK, null);
+                }
+
+                return CreateResultForAllReservations(reservations);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error trying to fetch check availability for the month");
+                return ResponseResultFactory.CreateResponseServerError();
+            }
         }
 
         public async Task<ResponseResult> PlaceReservation(ReservationDto reservationDto)
         {
-            ResponseResult responseResult = new();
-            var reservation = ReservationDtoToReservation(reservationDto);
-
-            if (reservation.IsValid())
+            try
             {
-                await _reservationRepository.AddReservation(reservation);
-                if (await _reservationRepository.UnitOfWork.Commit())
-                {
-                    responseResult.Response = ReservationToReservationDto(reservation);
-                    return responseResult;
-                }
-                else
-                {
-                    CreateErrorResponse(responseResult, "Reservation not saved. Please contact administrators.");
-                    return responseResult;
-                }
-            }
+                var reservation = ReservationDtoToReservation(reservationDto);
 
-            responseResult.ValidationResult = reservation.ValidationResult;
-            return responseResult;
+                if (reservation.IsValid())
+                {
+                    if (await AddReservation(reservation))
+                    {
+                        var response = ReservationToReservationDto(reservation);
+                        return new ResponseResult(response, HttpStatusCode.OK, null);
+                    }
+                    else
+                    {
+                        return ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.InternalServerError, "Reservation not saved. Please contact administrators.");
+                    }
+                }
+
+                return new ResponseResult(null, HttpStatusCode.BadRequest, reservation.ValidationResult);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error trying to place Reservation");
+                return ResponseResultFactory.CreateResponseServerError();
+            }
         }
 
         public async Task<ResponseResult> CancelReservation(Guid guestId, DateTime checkin)
         {
-            await _reservationRepository.CancelReservation(guestId, checkin);
-            await _reservationRepository.UnitOfWork.Commit();
-
-            return new ResponseResult
+            try
             {
-                Response = "Reservation canceled successfuly"
-            };
+                var reservationToCancel = await _reservationRepository.GetByGuestIdAndCheckinAsync(guestId, checkin);
+
+                if (reservationToCancel != null)
+                {
+                    _reservationRepository.CancelReservation(reservationToCancel);
+                    await _reservationRepository.UnitOfWork.Commit();
+                }
+
+                return new ResponseResult("Reservation canceled successfuly", HttpStatusCode.OK, null);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error trying to cancel Reservation");
+                return ResponseResultFactory.CreateResponseServerError();
+            }
         }
 
-        public async Task<ResponseResult> ModifyReservation(Guid guestId, DateTime oldCheckInDate, DateTime newCheckinDate, DateTime oldCheckOutDate, DateTime newCheckoutDate)
+        public async Task<ResponseResult> ModifyReservation(UpdateReservationDto updateReservationDto)
         {
-            ResponseResult responseResult = new();
-            
-            var reservation = await _reservationRepository.GetByGuestIdAndCheckin(guestId, oldCheckInDate);
+            try
+            {
+                if (await CheckIfReservationExists(updateReservationDto.NewCheckinDate))
+                {
+                    return ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.BadRequest, $"Already exists a reservation with Checkin: {updateReservationDto.NewCheckinDate}.");
+                }
+
+                if (await CheckIfReservationExists(updateReservationDto.NewCheckoutDate))
+                {
+                    return ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.BadRequest, $"Already exists a reservation with checkin date equals {updateReservationDto.NewCheckoutDate}.");
+                }
+
+                return await UpdateReservation(updateReservationDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error trying to modify Reservation");
+                return ResponseResultFactory.CreateResponseServerError();
+            }
+        }
+        private async Task<bool> CheckIfReservationExists(DateTime dateToCheck)
+        {
+            return await _reservationRepository.GetByCheckinAsync(dateToCheck) != null;
+        }
+
+        private async Task<ResponseResult> UpdateReservation(UpdateReservationDto updateReservationDto)
+        {
+            var reservation = await _reservationRepository.GetByGuestIdAndCheckinAsync(updateReservationDto.GuestId, updateReservationDto.CurrentCheckInDate);
+
             if (reservation == null)
             {
-                CreateErrorResponse(responseResult, "Reservation not found.");
-                return responseResult;
-
+                return ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.NotFound, "Reservation not found.");
             }
 
-            var reservationWithCheckinEqualsNewCheckout = await _reservationRepository.GetByCheckin(newCheckinDate);
-            if(reservationWithCheckinEqualsNewCheckout != null )
+            reservation.UpdateCheckin(updateReservationDto.NewCheckinDate);
+            reservation.UpdateCheckout(updateReservationDto.NewCheckoutDate);
+
+            if (reservation.IsValid())
             {
-                CreateErrorResponse(responseResult, $"Already exists a reservation with checkin date equals {newCheckoutDate}.");
-                return responseResult;
+                _reservationRepository.UpdateReservation(reservation);
+                if (await _reservationRepository.UnitOfWork.Commit())
+                {
+                    var response = ReservationToReservationDto(reservation);
+                    return ResponseResultFactory.CreateResponseResultSuccess(HttpStatusCode.OK, response);
+                }
+                else
+                {
+                    return ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.InternalServerError, "Reservation not updated. Please contact administrators.");
+                }
             }
 
-            reservation.UpdateCheckin(newCheckinDate);
-            reservation.UpdateCheckout(newCheckoutDate);
-            await _reservationRepository.UpdateReservation(reservation);
-            
-            if(await _reservationRepository.UnitOfWork.Commit())
-            {
-                responseResult.Response = reservation;
-                return responseResult;
-            }
-
-            CreateErrorResponse(responseResult, $"Reservation not updated. Contact administrators.");
-            return responseResult;
-        }
-
-        private static void CreateErrorResponse(ResponseResult responseResult, string message)
-        {
-            responseResult.ValidationResult = new ValidationResult();
-            var validationFailure = new ValidationFailure(string.Empty, message);
-            responseResult.ValidationResult.Errors.Add(validationFailure);
+            return ResponseResultFactory.CreateResponseWithValidationResultAlreadySet(HttpStatusCode.OK, reservation.ValidationResult);
         }
 
         private Reservation ReservationDtoToReservation(ReservationDto reservationDto)
@@ -117,10 +155,10 @@ namespace HotelBooking.Application.Services
 
         private ReservationDto ReservationToReservationDto(Reservation reservation)
         {
-            return new ReservationDto(reservation.GuestId, reservation.RoomId, reservation.CheckIn, reservation.CheckOut);
+            return new ReservationDto(reservation.GuestId, reservation.CheckIn, reservation.CheckOut);
         }
 
-        private static void CreateResultForAllReservations(ResponseResult result, IEnumerable<Reservation> reservations)
+        private static ResponseResult CreateResultForAllReservations(IEnumerable<Reservation> reservations)
         {
             var reserved = new List<object>();
 
@@ -129,11 +167,33 @@ namespace HotelBooking.Application.Services
                 reserved.Add(new { Checkin = reservation.CheckIn, Checkout = reservation.CheckOut });
             }
 
-            result.Response = new
+            var response = new
             {
                 Message = $"Room not available for following Dates ",
                 Reservations = reserved
             };
+
+            return new ResponseResult(response, HttpStatusCode.OK, null);
+        }
+
+        private async Task<bool> AddReservation(Reservation reservation)
+        {
+            var reservationExistent = await _reservationRepository.GetByGuestIdAsync(reservation.GuestId);
+
+            if (reservationExistent == null)
+            {
+                await _reservationRepository.AddReservationAsync(reservation);
+            }
+            else if (reservationExistent.CheckIn.Date == reservation.CheckIn.Date)
+            {
+                return true;
+            }
+            else
+            {
+                await _reservationRepository.AddReservationAsync(reservation);
+            }
+
+            return await _reservationRepository.UnitOfWork.Commit();
         }
     }
 }

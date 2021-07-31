@@ -22,9 +22,9 @@ namespace HotelBooking.Data.Repositories
             return await _context.Guests.FirstOrDefaultAsync(x => x.Email.Equals(email));
         }
 
-        public void AddGuest(Guest guest)
+        public async Task AddGuest(Guest guest)
         {
-            _context.Guests.Add(guest);
+            await _context.Guests.AddAsync(guest);
         }
 
         

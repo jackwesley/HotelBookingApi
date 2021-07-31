@@ -8,7 +8,7 @@ namespace HotelBooking.Data.Mappings
     {
         public void Configure(EntityTypeBuilder<Reservation> builder)
         {
-            builder.HasKey(r => new { r.Id, r.GuestId, r.RoomId, r.CheckIn});
+            builder.HasKey(r => r.Id);
 
             builder.Property(r => r.CheckIn)
                 .IsRequired()

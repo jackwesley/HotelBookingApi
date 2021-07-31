@@ -8,13 +8,13 @@ namespace HotelBooking.Domain.Repositories
 {
     public interface IReservationRepository : IRepository<Reservation>
     {
-        Task<IEnumerable<Reservation>> GetAllCheckingForTheMonth();
-        Task<Reservation> GetByGuestId(Guid guestId);
-        Task AddReservation(Reservation reservation);
-        Task UpdateReservation(Reservation reservation);
-        Task CancelReservation(Guid guestId, DateTime checkin);
-        Task<IEnumerable<Reservation>> GetAllReservationsByGuestId(Guid guestId);
-        Task<Reservation> GetByGuestIdAndCheckin(Guid guestId, DateTime checkin);
-        Task<Reservation> GetByCheckin(DateTime checkin);
+        Task<IEnumerable<Reservation>> GetAllCheckingForTheMonthAsync();
+        Task<Reservation> GetByGuestIdAsync(Guid guestId);
+        Task AddReservationAsync(Reservation reservation);
+        void UpdateReservation(Reservation reservation);
+        void CancelReservation(Reservation reservation);
+        Task<IEnumerable<Reservation>> GetAllReservationsByGuestIdAsync(Guid guestId);
+        Task<Reservation> GetByGuestIdAndCheckinAsync(Guid guestId, DateTime checkin);
+        Task<Reservation> GetByCheckinAsync(DateTime checkin);
     }
 }
