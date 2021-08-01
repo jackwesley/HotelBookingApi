@@ -7,7 +7,9 @@ namespace HotelBooking.Application.Mappers
     {
         public static ReservationDto ToReservationDto(Reservation reservation)
         {
-            return new ReservationDto(reservation.GuestId, reservation.CheckIn, reservation.CheckOut);
+            var reservationDto = new ReservationDto(reservation.GuestId, reservation.CheckIn, reservation.CheckOut);
+            reservationDto.SetRumNumber(reservation.Room.Number);
+            return reservationDto;
         }
     }
 }

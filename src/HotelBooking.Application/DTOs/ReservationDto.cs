@@ -15,7 +15,7 @@ namespace HotelBooking.Application.DTOs
         [Required]
         public Guid GuestId { get; set; }
 
-        public int RoomNumber => 1;
+        public int RoomNumber { get; private set; }
 
         [Required]
         [DataType(DataType.Date)]
@@ -26,5 +26,10 @@ namespace HotelBooking.Application.DTOs
         [DataType(DataType.Date)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
         public DateTime CheckOut { get; set; }
+
+        public void SetRumNumber(int roomNumber)
+        {
+            RoomNumber = roomNumber;
+        }
     }
 }
