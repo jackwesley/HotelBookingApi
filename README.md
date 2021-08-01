@@ -29,6 +29,8 @@ After the confiration mentioned above, open the console, choose the project Hote
 4. Auto Fixture to create class objects in tests
 5. Fluent Assertions to assert response from tests
 6. Moq to moq interfaces in tests
+7. C# .Net Core 5
+8. Sql Server
 
 ## Links of the Application
 1. Swagger -> https://localhost:44331/swagger/index.html
