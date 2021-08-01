@@ -12,78 +12,24 @@ namespace HotelBooking.Domain.Models
 
         public Guid GuestId { get; private set; }
         public Guid RoomId { get; private set; }
-        public DateTime CheckIn { get; private set; }
-        public DateTime CheckOut { get; private set; }
-        public List<DateTime> DaysToStay { get; private set; }
+        public StayTime StayTime { get; private set; }
         public virtual Room Room { get; private set; }
         public virtual Guest Guest { get; private set; }
 
-        public Reservation(Guid guestId, DateTime checkIn, DateTime checkOut)
+        public Reservation(Guid guestId, StayTime stayTime)
         {
             GuestId = guestId;
             RoomId = new Guid("539161dd-0ac5-4222-a410-24fbaf7dc70f");
-            CheckIn = checkIn;
-            CheckOut = checkOut.AddHours(23).AddMinutes(59).AddSeconds(59);
-            DaysToStay = GetDaysToStay();
-        }
-
-        private List<DateTime> GetDaysToStay()
-        {
-            List<DateTime> daysToStay = new();
-            var countDays = CheckOut.Subtract(CheckIn).Days;
-
-            daysToStay.Add(CheckIn);
-            for (int day = 1; day <= countDays; day++)
-            {
-                daysToStay.Add(CheckIn.AddDays(day).Date);
-            }
-
-            return daysToStay;
+            StayTime = stayTime;
         }
 
         public override bool IsValid()
         {
-            ValidationResult = new ReservationValidation().Validate(this);
+            StayTime.IsValid();
+            ValidationResult = StayTime.ValidationResult;
             return ValidationResult.IsValid;
         }
 
-        public void UpdateCheckin(DateTime newCheckin)
-        {
-            CheckIn = newCheckin;
-            UpdateDaysToStay();
-        }
 
-        public void UpdateCheckout(DateTime newCheckout)
-        {
-            CheckOut = newCheckout.AddHours(23).AddMinutes(59).AddSeconds(59);
-            UpdateDaysToStay();
-        }
-
-        public void UpdateDaysToStay()
-        {
-           DaysToStay = GetDaysToStay();
-        }
-    }
-
-    public class ReservationValidation : AbstractValidator<Reservation>
-    {
-        public ReservationValidation()
-        {
-            RuleFor(r => r.CheckIn)
-              .LessThan(r => r.CheckOut)
-              .WithMessage("Checkin can not be greater than Checkout.");
-
-            RuleFor(r => r.DaysToStay.Count)
-              .LessThanOrEqualTo(3)
-              .WithMessage("Stay time can not be longer than 3 days.");
-
-            RuleFor(r => r.CheckIn)
-                .LessThan(DateTime.Now.AddDays(30))
-                .WithMessage("It is not possible to make a reservation with more than 30 days in advance");
-
-            RuleFor(r => r.CheckIn)
-                .GreaterThan(DateTime.Now)
-                .WithMessage("All reservertions must start at least in the next day.");
-        }
     }
 }

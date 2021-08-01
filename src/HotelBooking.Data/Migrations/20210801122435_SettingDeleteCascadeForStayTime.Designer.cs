@@ -4,14 +4,16 @@ using HotelBooking.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HotelBooking.Data.Migrations
 {
     [DbContext(typeof(ReservationContext))]
-    partial class ReservationContextModelSnapshot : ModelSnapshot
+    [Migration("20210801122435_SettingDeleteCascadeForStayTime")]
+    partial class SettingDeleteCascadeForStayTime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -120,7 +122,7 @@ namespace HotelBooking.Data.Migrations
                     b.HasOne("HotelBooking.Domain.Models.StayTime", "StayTime")
                         .WithMany("Reservations")
                         .HasForeignKey("StayTimeId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.ClientCascade);
 
                     b.Navigation("Guest");
 

@@ -16,6 +16,7 @@ namespace HotelBooking.Data
 
         public DbSet<Reservation> Reservations { get; set; }
 
+        public DbSet<StayTime> StayTime { get; set; }
         public DbSet<Guest> Guests { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -66,8 +66,8 @@ namespace HotelBooking.Tests.Application
         public void CheckAvailability_WithCheckingAndCheckoutOkWithAvailableRoom_ShouldReturn_RoomsAvailable()
         {
             //Arrange
-            DateTime checkIn = DateTime.Now;
-            DateTime checkOut = DateTime.Now.AddDays(2);
+            DateTime checkIn = DateTime.Now.AddDays(1);
+            DateTime checkOut = DateTime.Now.AddDays(3);
 
             _reservationRepository.Setup(x => x.CheckAvailabilyForDates(It.IsAny<List<DateTime>>())).Returns(true);
 
@@ -85,8 +85,8 @@ namespace HotelBooking.Tests.Application
         public void CheckAvailability_WithCheckingAndCheckoutOkWithUnavailableRoom_ShouldReturn_RoomsNotAvailable()
         {
             //Arrange
-            DateTime checkIn = DateTime.Now;
-            DateTime checkOut = DateTime.Now.AddDays(2);
+            DateTime checkIn = DateTime.Now.AddDays(1);
+            DateTime checkOut = DateTime.Now.AddDays(3);
 
             _reservationRepository.Setup(x => x.CheckAvailabilyForDates(It.IsAny<List<DateTime>>())).Returns(false);
 
@@ -188,8 +188,9 @@ namespace HotelBooking.Tests.Application
             updateReservationDto.CurrentCheckOut = DateTime.Now.AddDays(2);
             updateReservationDto.NewCheckIn = DateTime.Now.AddDays(3);
             updateReservationDto.NewCheckOut = DateTime.Now.AddDays(4);
+            var stayTime = new StayTime(updateReservationDto.CurrentCheckIn, updateReservationDto.CurrentCheckOut);
 
-            var reservation = new Reservation(updateReservationDto.GuestId, updateReservationDto.CurrentCheckIn, updateReservationDto.CurrentCheckOut);
+            var reservation = new Reservation(updateReservationDto.GuestId, stayTime);
 
             _reservationRepository.Setup(x => x.CheckAvailabilyForDates(It.IsAny<List<DateTime>>()))
                 .Returns(true);
@@ -219,8 +220,9 @@ namespace HotelBooking.Tests.Application
             updateReservationDto.CurrentCheckOut = DateTime.Now.AddDays(2);
             updateReservationDto.NewCheckIn = DateTime.Now.AddDays(3);
             updateReservationDto.NewCheckOut = DateTime.Now.AddDays(4);
+            var stayTime = new StayTime(updateReservationDto.CurrentCheckIn, updateReservationDto.CurrentCheckOut);
 
-            var reservation = new Reservation(updateReservationDto.GuestId, updateReservationDto.CurrentCheckIn, updateReservationDto.CurrentCheckOut);
+            var reservation = new Reservation(updateReservationDto.GuestId, stayTime);
 
             _reservationRepository.Setup(x => x.CheckAvailabilyForDates(It.IsAny<List<DateTime>>()))
                 .Returns(true);
@@ -248,8 +250,8 @@ namespace HotelBooking.Tests.Application
             updateReservationDto.CurrentCheckOut = DateTime.Now.AddDays(2);
             updateReservationDto.NewCheckIn = DateTime.Now.AddDays(3);
             updateReservationDto.NewCheckOut = DateTime.Now.AddDays(4);
-
-            var reservation = new Reservation(updateReservationDto.GuestId, updateReservationDto.CurrentCheckIn, updateReservationDto.CurrentCheckOut);
+            var stayTime = new StayTime(updateReservationDto.CurrentCheckIn, updateReservationDto.CurrentCheckOut);
+            var reservation = new Reservation(updateReservationDto.GuestId, stayTime);
 
             _reservationRepository.Setup(x => x.CheckAvailabilyForDates(It.IsAny<List<DateTime>>()))
                 .Returns(true);
@@ -283,7 +285,8 @@ namespace HotelBooking.Tests.Application
             //Arrange
             Guid guestId = Guid.NewGuid();
             var checkin = DateTime.Now;
-            var reservation = new Reservation(guestId, DateTime.Now, DateTime.Now.AddDays(2));
+            var stayTime = new StayTime(DateTime.Now, DateTime.Now.AddDays(2));
+            var reservation = new Reservation(guestId, stayTime);
 
             _reservationRepository.Setup(x => x.UnitOfWork.CommitAsync())
               .ReturnsAsync(true);
@@ -308,7 +311,8 @@ namespace HotelBooking.Tests.Application
             //Arrange
             Guid guestId = Guid.NewGuid();
             var checkin = DateTime.Now;
-            var reservation = new Reservation(guestId, DateTime.Now, DateTime.Now.AddDays(2));
+            var stayTime = new StayTime(DateTime.Now, DateTime.Now.AddDays(2));
+            var reservation = new Reservation(guestId, stayTime);
 
             _reservationRepository.Setup(x => x.UnitOfWork.CommitAsync())
               .ReturnsAsync(true);
@@ -358,7 +362,8 @@ namespace HotelBooking.Tests.Application
             //Arrange
             Guid guestId = Guid.NewGuid();
             var checkin = DateTime.Now;
-            var reservation = new Reservation(guestId, DateTime.Now, DateTime.Now.AddDays(2));
+            var stayTime = new StayTime(DateTime.Now, DateTime.Now.AddDays(2));
+            var reservation = new Reservation(guestId, stayTime);
 
             _reservationRepository.Setup(x => x.UnitOfWork.CommitAsync())
               .ReturnsAsync(false);
@@ -380,17 +385,17 @@ namespace HotelBooking.Tests.Application
         {
             //Arrange
             Guid guestId = Guid.NewGuid();
-            var checkin = DateTime.Now;
-            var reservation = new Reservation(guestId, DateTime.Now, DateTime.Now.AddDays(2));
+            var stayTime = new StayTime(DateTime.Now, DateTime.Now.AddDays(2));
+            var reservation = new Reservation(guestId, stayTime);
 
             _reservationRepository.Setup(x => x.UnitOfWork.CommitAsync())
               .Throws(new Exception());
 
-            _reservationRepository.Setup(x => x.GetByGuestIdAndCheckinAsync(guestId, checkin))
+            _reservationRepository.Setup(x => x.GetByGuestIdAndCheckinAsync(guestId, stayTime.CheckIn))
                 .ReturnsAsync(reservation);
 
             //Act
-            var response = await _service.CancelReservationAsync(guestId, checkin);
+            var response = await _service.CancelReservationAsync(guestId, stayTime.CheckIn);
 
             //Assert
             response.Should().NotBeNull();

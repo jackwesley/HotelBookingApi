@@ -13,8 +13,10 @@ namespace HotelBooking.Tests.Domain
             var guestId = Guid.NewGuid();
             var checkin = DateTime.Now.AddDays(1);
             var checkout = DateTime.Now.AddDays(2);
+            var stayTime = new StayTime(checkin, checkout);
 
-            var reservation = new Reservation(guestId, checkin, checkout);
+            var reservation = new Reservation(guestId, stayTime);
+            
             //Act
             var isValid = reservation.IsValid();
 
@@ -30,9 +32,9 @@ namespace HotelBooking.Tests.Domain
             var checkin = DateTime.Now.AddDays(1);
             var checkout = DateTime.Now.AddDays(5);
 
-            var diffBetweenCheckinAndCheckoutInDays = checkout.Subtract(checkin).Days;
+            var stayTime = new StayTime(checkin, checkout);
+            var reservation = new Reservation(guestId, stayTime);
 
-            var reservation = new Reservation(guestId, checkin, checkout);
             //Act
             var isValid = reservation.IsValid();
 
@@ -47,9 +49,10 @@ namespace HotelBooking.Tests.Domain
             var guestId = Guid.NewGuid();
             var checkin = DateTime.Now.AddDays(31);
             var checkout = DateTime.Now.AddDays(34);
-            var diffBetweenCheckinAndCheckoutInDays = checkout.Subtract(checkin).Days;
 
-            var reservation = new Reservation(guestId, checkin, checkout);
+            var stayTime = new StayTime(checkin, checkout);
+            var reservation = new Reservation(guestId, stayTime);
+
             //Act
             var isValid = reservation.IsValid();
 
@@ -64,9 +67,10 @@ namespace HotelBooking.Tests.Domain
             var guestId = Guid.NewGuid();
             var checkin = DateTime.Now;
             var checkout = DateTime.Now.AddDays(3);
-            var diffBetweenCheckinAndCheckoutInDays = checkout.Subtract(checkin).Days;
 
-            var reservation = new Reservation(guestId, checkin, checkout);
+            var stayTime = new StayTime(checkin, checkout);
+            var reservation = new Reservation(guestId, stayTime);
+
             //Act
             var isValid = reservation.IsValid();
 

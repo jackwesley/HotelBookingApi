@@ -26,13 +26,14 @@ namespace HotelBooking.Data.Repositories
 
         public void CancelReservation(Reservation reservation)
         {
+            _context.StayTime.Remove(reservation.StayTime);
             _context.Reservations.Remove(reservation);
         }
 
         public async Task<IEnumerable<Reservation>> GetAllCheckingForTheMonthAsync()
         {
             return await _context.Reservations
-                .AsNoTracking().Where(x => x.CheckIn > DateTime.Now.AddDays(1) && x.CheckOut <= DateTime.Now.AddDays(30))
+                .AsNoTracking().Where(x => x.StayTime.CheckIn > DateTime.Now.AddDays(1) && x.StayTime.CheckOut <= DateTime.Now.AddDays(30))
                 .ToListAsync();
         }
 
@@ -43,12 +44,12 @@ namespace HotelBooking.Data.Repositories
 
         public async Task<Reservation> GetByGuestIdAndCheckinAsync(Guid guestId, DateTime checkin)
         {
-            return await _context.Reservations.FirstOrDefaultAsync(x => x.GuestId.Equals(guestId) && x.CheckIn == checkin);
+            return await _context.Reservations.Include(x => x.StayTime).FirstOrDefaultAsync(x => x.GuestId.Equals(guestId) && x.StayTime.CheckIn == checkin);
         }
 
         public async Task<Reservation> GetByCheckinAsync(DateTime checkin)
         {
-            return await _context.Reservations.FirstOrDefaultAsync(x => x.CheckIn == checkin);
+            return await _context.Reservations.FirstOrDefaultAsync(x => x.StayTime.CheckIn == checkin);
         }
 
         public async Task<IEnumerable<Reservation>> GetAllReservationsByGuestIdAsync(Guid guestId)
@@ -60,7 +61,7 @@ namespace HotelBooking.Data.Repositories
 
         public bool CheckAvailabilyForDates(List<DateTime> datesToCheck)
         {
-            var checkins = _context.Reservations.Where(x => datesToCheck.Contains(x.CheckIn.Date) || datesToCheck.Contains(x.CheckOut.Date));
+            var checkins = _context.Reservations.Where(x => datesToCheck.Contains(x.StayTime.CheckIn.Date) || datesToCheck.Contains(x.StayTime.CheckOut.Date));
 
             return checkins.ToList().Count == 0;
         }

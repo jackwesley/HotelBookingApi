@@ -27,11 +27,14 @@ namespace HotelBooking.Application.Services
         {
             try
             {
-                (ResponseResult responseResult, List<DateTime> datesToCheck) = VerifyAllowedStayAndGetListOfDaysToCheck(checkIn, checkOut);
+                var stayTime = new StayTime(checkIn, checkOut);
 
-                if (responseResult != null) return responseResult;
+                if (!stayTime.IsValid())
+                {
+                    return ResponseResultFactory.CreateResponseWithValidationResultAlreadySet(HttpStatusCode.BadRequest, stayTime.ValidationResult);
+                }
 
-                if (IsAvailableForDates(datesToCheck))
+                if (IsAvailableForDates(stayTime.DaysToStay))
                 {
                     return ResponseResultFactory.CreateResponseResultSuccess(HttpStatusCode.OK, $"Room is available for CheckIn: {checkIn.ToString("yyyy-MM-dd")} and checkOut:{checkOut.ToString("yyyy-MM-dd")}");
                 }
@@ -45,7 +48,6 @@ namespace HotelBooking.Application.Services
             }
         }
 
-
         public async Task<ResponseResult> PlaceReservationAsync(ReservationDto reservationDto)
         {
             try
@@ -57,7 +59,7 @@ namespace HotelBooking.Application.Services
                     return ResponseResultFactory.CreateResponseWithValidationResultAlreadySet(HttpStatusCode.BadRequest, reservation.ValidationResult);
                 }
 
-                if (IsAvailableForDates(reservation.DaysToStay))
+                if (IsAvailableForDates(reservation.StayTime.DaysToStay))
                 {
                     return await CreateReservationAsync(reservationDto);
                 }
@@ -83,13 +85,13 @@ namespace HotelBooking.Application.Services
                     return ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.NotFound, "Reservation not found.");
                 }
 
-                reservation.UpdateCheckin(updateReservationDto.NewCheckIn);
-                reservation.UpdateCheckout(updateReservationDto.NewCheckOut);
+                reservation.StayTime.UpdateCheckin(updateReservationDto.NewCheckIn);
+                reservation.StayTime.UpdateCheckout(updateReservationDto.NewCheckOut);
 
                 if (!reservation.IsValid())
                     return ResponseResultFactory.CreateResponseWithValidationResultAlreadySet(HttpStatusCode.BadRequest, reservation.ValidationResult);
 
-                if (IsAvailableForDates(reservation.DaysToStay))
+                if (IsAvailableForDates(reservation.StayTime.DaysToStay))
                 {
                     if (await UpdateReservationAsync(reservation))
                     {
@@ -138,21 +140,6 @@ namespace HotelBooking.Application.Services
             }
         }
 
-        private (ResponseResult, List<DateTime>) VerifyAllowedStayAndGetListOfDaysToCheck(DateTime checkIn, DateTime checkOut)
-        {
-
-            if (checkIn > checkOut)
-                return (ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.BadRequest, "CheckOut must be greater than CheckIn."), null);
-
-            var daysAllowedToStay = 3;
-            var datesToCheck = GetListOfDaysToCheckAvailability(checkIn, checkOut);
-
-            if (datesToCheck.Count > daysAllowedToStay)
-                return (ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.BadRequest, "Stay time can not be longer than 3 days."), null);
-            else
-                return (null, datesToCheck);
-        }
-
         private bool IsAvailableForDates(List<DateTime> listDatesToCheck)
         {
             return _reservationRepository.CheckAvailabilyForDates(listDatesToCheck);
@@ -176,20 +163,6 @@ namespace HotelBooking.Application.Services
             }
 
             return ResponseResultFactory.CreateResponseWithValidationResultAlreadySet(HttpStatusCode.BadRequest, reservation.ValidationResult);
-        }
-
-        private List<DateTime> GetListOfDaysToCheckAvailability(DateTime checkIn, DateTime checkOut)
-        {
-            List<DateTime> datesToCheck = new();
-            var countDays = checkOut.Subtract(checkIn).Days;
-
-            datesToCheck.Add(checkIn);
-            for (int day = 1; day <= countDays; day++)
-            {
-                datesToCheck.Add(checkIn.AddDays(day).Date);
-            }
-
-            return datesToCheck;
         }
 
         private async Task<bool> AddReservationAsync(Reservation reservation)
