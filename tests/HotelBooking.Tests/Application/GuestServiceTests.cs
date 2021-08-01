@@ -39,7 +39,7 @@ namespace HotelBooking.Tests.Application
 
             //Assert
             response.Should().NotBeNull();
-            response.Should().BeOfType(typeof(ResponseResult));
+            response.Should().BeOfType(typeof(ResponseResult<GuestDto>));
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
@@ -57,7 +57,7 @@ namespace HotelBooking.Tests.Application
 
             //Assert
             response.Should().NotBeNull();
-            response.Should().BeOfType(typeof(ResponseResult));
+            response.Should().BeOfType(typeof(ResponseResult<GuestDto>));
             response.StatusCode.Should().Be(HttpStatusCode.Created);
         }
 
@@ -75,7 +75,7 @@ namespace HotelBooking.Tests.Application
 
             //Assert
             response.Should().NotBeNull();
-            response.Should().BeOfType(typeof(ResponseResult));
+            response.Should().BeOfType(typeof(ResponseResult<GuestDto>));
             response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
         }
 
@@ -93,7 +93,7 @@ namespace HotelBooking.Tests.Application
 
             //Assert
             response.Should().NotBeNull();
-            response.Should().BeOfType(typeof(ResponseResult));
+            response.Should().BeOfType(typeof(ResponseResult<GuestDto>));
             response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
             _logger.Verify(l => l.Log(
                 LogLevel.Error,

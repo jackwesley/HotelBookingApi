@@ -22,10 +22,10 @@ namespace HotelBooking.Application.Services
             _logger = logger;
         }
 
-        public async Task<ResponseResult> CreateGuestAsync(GuestDto guest)
+        public async Task<ResponseResult<GuestDto>> CreateGuestAsync(GuestDto guest)
         {
             var guestEntity = new Guest(guest.Name, guest.Document, guest.Email, guest.Phone);
-            
+
             try
             {
                 if (guestEntity.IsValid())
@@ -34,27 +34,26 @@ namespace HotelBooking.Application.Services
                     if (await CreateGuestAsync(guestEntity))
                     {
                         guest.Id = guestEntity.Id;
-                        return ResponseResultFactory.CreateResponseResultSuccess(HttpStatusCode.Created, guest);
+                        return ResponseResultFactory.CreateResponseResultSuccess<GuestDto>(HttpStatusCode.Created, guest);
                     }
 
-                    return ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.InternalServerError, "Server error! Please contact administrators.");
+                    return ResponseResultFactory.CreateResponseWithValidationResultNotSet<GuestDto>(HttpStatusCode.InternalServerError, "Server error! Please contact administrators.", null);
                 }
 
-                return ResponseResultFactory.CreateResponseWithValidationResultAlreadySet(HttpStatusCode.BadRequest, guestEntity.ValidationResult);
+                return ResponseResultFactory.CreateResponseWithValidationResultAlreadySet<GuestDto>(HttpStatusCode.BadRequest, guestEntity.ValidationResult, null);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error trying to create Guest");
-                return ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.InternalServerError, "Server error! Please contact administrators.");
+                return ResponseResultFactory.CreateResponseServerError<GuestDto>(null);
             }
         }
 
-        public async Task<ResponseResult> GetGuestByEmailAsync(string email)
+        public async Task<ResponseResult<GuestDto>> GetGuestByEmailAsync(string email)
         {
-            var guest = await _guestRepository.GetByEmailAsync(email);
-
             try
             {
+                var guest = await _guestRepository.GetByEmailAsync(email);
                 if (guest != null)
                 {
                     var guestDto = new GuestDto(guest.Id, guest.Name, guest.Document, guest.Email, guest.Phone);
@@ -66,15 +65,15 @@ namespace HotelBooking.Application.Services
                     var validationFailure = new ValidationFailure("email", "Guest not found!");
                     validationResult.Errors.Add(validationFailure);
 
-                    return ResponseResultFactory.CreateResponseWithValidationResultAlreadySet(HttpStatusCode.NotFound, validationResult);
+                    return ResponseResultFactory.CreateResponseWithValidationResultAlreadySet<GuestDto>(HttpStatusCode.NotFound, validationResult, null);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error trying to get Guest");
-                return ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.InternalServerError, "Server error! Please contact administrators.");
+                _logger.LogError(ex, "Error trying to create Guest");
+                return ResponseResultFactory.CreateResponseServerError<GuestDto>(null);
             }
-           
+
         }
 
         private async Task<bool> CreateGuestAsync(Guest guest)
@@ -83,6 +82,6 @@ namespace HotelBooking.Application.Services
             return await _guestRepository.UnitOfWork.CommitAsync();
         }
 
-        
+
     }
 }

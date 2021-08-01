@@ -6,20 +6,20 @@ using System.Text.Json.Serialization;
 
 namespace HotelBooking.Core.DomainObjects
 {
-    public class ResponseResult
+    public class ResponseResult<T>
     {
-        public ResponseResult(object response, HttpStatusCode statusCode, ValidationResult validationResult)
+        public ResponseResult(T response, HttpStatusCode statusCode, ValidationResult validationResult)
         {
             Response = response;
             StatusCode = statusCode;
             ValidationResult = validationResult;
         }
-        public object Response { get; set; }
+
+        public T Response { get; set; }
 
         public HttpStatusCode StatusCode { get; set; }
 
         public IEnumerable<string> Errors => ValidationResult?.Errors.Select(x => x.ErrorMessage);
-
 
         [JsonIgnore]
         public ValidationResult ValidationResult { get; set; }
@@ -27,28 +27,28 @@ namespace HotelBooking.Core.DomainObjects
 
     public static class ResponseResultFactory
     {
-        public static ResponseResult CreateResponseWithValidationResultNotSet(HttpStatusCode httpStatusCode, string message)
+        public static ResponseResult<T> CreateResponseWithValidationResultNotSet<T>(HttpStatusCode httpStatusCode, string message,T response)
         {
             var validationResult = new ValidationResult();
             var validationFailure = new ValidationFailure(string.Empty, message);
             validationResult.Errors.Add(validationFailure);
 
-            return new ResponseResult(null, httpStatusCode, validationResult);
+            return new ResponseResult<T>(response, httpStatusCode, validationResult);
         }
 
-        public static ResponseResult CreateResponseWithValidationResultAlreadySet(HttpStatusCode httpStatusCode, ValidationResult validationResult)
+        public static ResponseResult<T> CreateResponseWithValidationResultAlreadySet<T>(HttpStatusCode httpStatusCode, ValidationResult validationResult,T response)
         {
-            return new ResponseResult(null, httpStatusCode, validationResult);
+            return new ResponseResult<T>(response, httpStatusCode, validationResult);
         }
 
-        public static ResponseResult CreateResponseResultSuccess(HttpStatusCode httpStatusCode, object response)
+        public static ResponseResult<T> CreateResponseResultSuccess<T>(HttpStatusCode httpStatusCode, T response)
         {
-            return new ResponseResult(response, httpStatusCode, null);
+            return new ResponseResult<T>(response, httpStatusCode, null);
         }
 
-        public static ResponseResult CreateResponseServerError()
+        public static ResponseResult<T> CreateResponseServerError<T>(T response)
         {
-            return ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.InternalServerError, "Server error! Please contact administrators.");
+            return ResponseResultFactory.CreateResponseWithValidationResultNotSet<T>(HttpStatusCode.InternalServerError, "Server error! Please contact administrators.", response);
         }
     }
 }

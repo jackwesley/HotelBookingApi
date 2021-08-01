@@ -1,10 +1,9 @@
-﻿using FluentValidation.Results;
-using HotelBooking.Application.DTOs;
+﻿using HotelBooking.Application.DTOs;
 using HotelBooking.Application.Services.Interfaces;
 using HotelBooking.Core.Controllers;
+using HotelBooking.Core.DomainObjects;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HotelBooking.Api.Controllers
@@ -21,8 +20,8 @@ namespace HotelBooking.Api.Controllers
 
         [HttpGet]
         [Route("guest/{email}")]
-        [SwaggerResponse(statusCode: 200, type: typeof(GuestDto), description: "Data from Guest.")]
-        [SwaggerResponse(statusCode: 400, type: typeof(IEnumerable<string>), description: "Bad request.")]
+        [SwaggerResponse(statusCode: 200, type: typeof(ResponseResult<GuestDto>), description: "Data from Guest.")]
+        [SwaggerResponse(statusCode: 400, type: typeof(ResponseResult<string>), description: "Bad request.")]
         public async Task<IActionResult> GetGuestAsync(string email)
         {
 
@@ -31,8 +30,8 @@ namespace HotelBooking.Api.Controllers
 
         [HttpPost]
         [Route("guest")]
-        [SwaggerResponse(statusCode: 201, type: typeof(GuestDto), description: "Data from Guest.")]
-        [SwaggerResponse(statusCode: 400, type: typeof(IEnumerable<string>), description: "Bad request.")]
+        [SwaggerResponse(statusCode: 201, type: typeof(ResponseResult<GuestDto>), description: "Data from Guest.")]
+        [SwaggerResponse(statusCode: 400, type: typeof(ResponseResult<string>), description: "Bad request.")]
         public async Task<IActionResult> CreateGuestAsync([FromBody] GuestDto guestDto)
         {
             return CustomResponse(await _guestService.CreateGuestAsync(guestDto));

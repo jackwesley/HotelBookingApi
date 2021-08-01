@@ -42,7 +42,7 @@ namespace HotelBooking.Tests.Application
 
             //Assert
             response.Should().NotBeNull();
-            response.Should().BeOfType(typeof(ResponseResult));
+            response.Should().BeOfType(typeof(ResponseResult<string>));
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
@@ -58,7 +58,7 @@ namespace HotelBooking.Tests.Application
 
             //Assert
             response.Should().NotBeNull();
-            response.Should().BeOfType(typeof(ResponseResult));
+            response.Should().BeOfType(typeof(ResponseResult<string>));
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
@@ -73,11 +73,11 @@ namespace HotelBooking.Tests.Application
 
             //Act
             var response = _service.CheckAvailability(checkIn, checkOut);
-            var responseMessage = response.Response as string;
+            var responseMessage = response.Response;
 
             //Assert
             response.Should().NotBeNull();
-            response.Should().BeOfType(typeof(ResponseResult));
+            response.Should().BeOfType(typeof(ResponseResult<string>));
             responseMessage.Should().Contain("Room is available for CheckIn");
         }
 
@@ -96,7 +96,7 @@ namespace HotelBooking.Tests.Application
 
             //Assert
             response.Should().NotBeNull();
-            response.Should().BeOfType(typeof(ResponseResult));
+            response.Should().BeOfType(typeof(ResponseResult<string>));
             responseMessage.Should().Contain("Room is NOT available for CheckIn");
         }
         #endregion
@@ -120,7 +120,7 @@ namespace HotelBooking.Tests.Application
 
             //Assert
             response.Should().NotBeNull();
-            response.Should().BeOfType(typeof(ResponseResult));
+            response.Should().BeOfType(typeof(ResponseResult<ReservationDto>));
             response.StatusCode.Should().Be(HttpStatusCode.Created);
         }
 
@@ -139,13 +139,11 @@ namespace HotelBooking.Tests.Application
 
             //Act
             var response = await _service.PlaceReservationAsync(reservationDto);
-            var responseMessage = response.Response as string;
 
             //Assert
             response.Should().NotBeNull();
-            response.Should().BeOfType(typeof(ResponseResult));
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            responseMessage.Should().Contain("Room is NOT available for CheckIn");
+            response.Should().BeOfType(typeof(ResponseResult<ReservationDto>));
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         [Fact]
@@ -166,7 +164,7 @@ namespace HotelBooking.Tests.Application
 
             //Assert
             response.Should().NotBeNull();
-            response.Should().BeOfType(typeof(ResponseResult));
+            response.Should().BeOfType(typeof(ResponseResult<ReservationDto>));
             response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
             _logger.Verify(l => l.Log(
                 LogLevel.Error,
@@ -202,10 +200,10 @@ namespace HotelBooking.Tests.Application
 
             //Act
             var response = await _service.ModifyReservationAsync(updateReservationDto);
-            var reservationResponse = response.Response as ReservationDto;
+            var reservationResponse = response.Response;
             //Assert
             response.Should().NotBeNull();
-            response.Should().BeOfType(typeof(ResponseResult));
+            response.Should().BeOfType(typeof(ResponseResult<ReservationDto>));
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             reservationResponse.CheckIn.Should().Equals(updateReservationDto.NewCheckIn);
             reservationResponse.CheckOut.Should().Equals(updateReservationDto.NewCheckOut);
@@ -237,7 +235,7 @@ namespace HotelBooking.Tests.Application
             
             //Assert
             response.Should().NotBeNull();
-            response.Should().BeOfType(typeof(ResponseResult));
+            response.Should().BeOfType(typeof(ResponseResult<ReservationDto>));
             response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
         }
 
@@ -266,7 +264,7 @@ namespace HotelBooking.Tests.Application
 
             //Assert
             response.Should().NotBeNull();
-            response.Should().BeOfType(typeof(ResponseResult));
+            response.Should().BeOfType(typeof(ResponseResult<ReservationDto>));
             response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
             _logger.Verify(l => l.Log(
                LogLevel.Error,
@@ -296,11 +294,11 @@ namespace HotelBooking.Tests.Application
 
             //Act
             var response = await _service.CancelReservationAsync(guestId, checkin);
-            var reservationResponse = response.Response as string;
+            var reservationResponse = response.Response;
 
             //Assert
             response.Should().NotBeNull();
-            response.Should().BeOfType(typeof(ResponseResult));
+            response.Should().BeOfType(typeof(ResponseResult<string>));
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             reservationResponse.Should().Contain("Reservation canceled successfully");
         }
@@ -326,7 +324,7 @@ namespace HotelBooking.Tests.Application
 
             //Assert
             response.Should().NotBeNull();
-            response.Should().BeOfType(typeof(ResponseResult));
+            response.Should().BeOfType(typeof(ResponseResult<string>));
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             reservationResponse.Should().Contain("Reservation canceled successfully");
 
@@ -351,7 +349,7 @@ namespace HotelBooking.Tests.Application
 
             //Assert
             response.Should().NotBeNull();
-            response.Should().BeOfType(typeof(ResponseResult));
+            response.Should().BeOfType(typeof(ResponseResult<string>));
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
             reservationResponse.Should().Contain("Reservation not found.");
         }
@@ -376,7 +374,7 @@ namespace HotelBooking.Tests.Application
 
             //Assert
             response.Should().NotBeNull();
-            response.Should().BeOfType(typeof(ResponseResult));
+            response.Should().BeOfType(typeof(ResponseResult<string>));
             response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
         }
 
@@ -399,7 +397,7 @@ namespace HotelBooking.Tests.Application
 
             //Assert
             response.Should().NotBeNull();
-            response.Should().BeOfType(typeof(ResponseResult));
+            response.Should().BeOfType(typeof(ResponseResult<string>));
             response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
             _logger.Verify(l => l.Log(
               LogLevel.Error,

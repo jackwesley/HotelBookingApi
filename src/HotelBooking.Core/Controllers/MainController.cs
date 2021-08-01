@@ -7,12 +7,12 @@ namespace HotelBooking.Core.Controllers
 {
     public class MainController : Controller
     {
-        protected bool ResponseHasErrors(ResponseResult responseResult)
+        protected bool ResponseHasErrors<T>(ResponseResult<T> responseResult)
         {
             return (responseResult.Errors != null &&  responseResult.Errors.Any());
         }
 
-        protected IActionResult CustomResponse(ResponseResult result = null)
+        protected IActionResult CustomResponse<T>(ResponseResult<T> result = null)
         {
             HttpStatusCode statusCode = result != null ? result.StatusCode : HttpStatusCode.InternalServerError;
             
