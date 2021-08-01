@@ -31,7 +31,7 @@ namespace HotelBooking.Application.Services
 
                 if (responseResult != null) return responseResult;
 
-                if (CheckAvailabilityForDates(datesToCheck))
+                if (IsAvailableForDates(datesToCheck))
                 {
                     return ResponseResultFactory.CreateResponseResultSuccess(HttpStatusCode.OK, $"Room is available for CheckIn: {checkIn.ToString("yyyy-MM-dd")} and checkOut:{checkOut.ToString("yyyy-MM-dd")}");
                 }
@@ -50,11 +50,14 @@ namespace HotelBooking.Application.Services
         {
             try
             {
-                (ResponseResult responseResult, List<DateTime> datesToCheck) = VerifyAllowedStayAndGetListOfDaysToCheck(reservationDto.CheckIn, reservationDto.CheckOut);
+                var reservation = ReservationDtoMapper.ToReservation(reservationDto);
 
-                if (responseResult != null) return responseResult;
+                if (!reservation.IsValid())
+                {
+                    return ResponseResultFactory.CreateResponseWithValidationResultAlreadySet(HttpStatusCode.BadRequest, reservation.ValidationResult);
+                }
 
-                if (CheckAvailabilityForDates(datesToCheck))
+                if (IsAvailableForDates(reservation.DaysToStay))
                 {
                     return await CreateReservationAsync(reservationDto);
                 }
@@ -73,13 +76,30 @@ namespace HotelBooking.Application.Services
         {
             try
             {
-                (ResponseResult responseResult, List<DateTime> datesToCheck) = VerifyAllowedStayAndGetListOfDaysToCheck(updateReservationDto.NewCheckIn, updateReservationDto.NewCheckOut);
+                Reservation reservation = await _reservationRepository.GetByGuestIdAndCheckinAsync(updateReservationDto.GuestId, updateReservationDto.CurrentCheckIn);
 
-                if (responseResult != null) return responseResult;
-
-                if (CheckAvailabilityForDates(datesToCheck))
+                if (reservation == null)
                 {
-                    return await UpdateReservationAsync(updateReservationDto);
+                    return ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.NotFound, "Reservation not found.");
+                }
+
+                reservation.UpdateCheckin(updateReservationDto.NewCheckIn);
+                reservation.UpdateCheckout(updateReservationDto.NewCheckOut);
+
+                if (!reservation.IsValid())
+                    return ResponseResultFactory.CreateResponseWithValidationResultAlreadySet(HttpStatusCode.BadRequest, reservation.ValidationResult);
+
+                if (IsAvailableForDates(reservation.DaysToStay))
+                {
+                    if (await UpdateReservationAsync(reservation))
+                    {
+                        var response = ReservationMapper.ToReservationDto(reservation);
+                        return ResponseResultFactory.CreateResponseResultSuccess(HttpStatusCode.OK, response);
+                    }
+                    else
+                    {
+                        return ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.InternalServerError, "Reservation not updated. Please contact administrators.");
+                    }
                 }
 
                 return ResponseResultFactory.CreateResponseResultSuccess(HttpStatusCode.OK, $"Room is NOT available for CheckIn: {updateReservationDto.NewCheckIn.ToString("yyyy-MM-dd")} and checkOut:{updateReservationDto.NewCheckOut.ToString("yyyy-MM-dd")}");
@@ -133,7 +153,7 @@ namespace HotelBooking.Application.Services
                 return (null, datesToCheck);
         }
 
-        private bool CheckAvailabilityForDates(List<DateTime> listDatesToCheck)
+        private bool IsAvailableForDates(List<DateTime> listDatesToCheck)
         {
             return _reservationRepository.CheckAvailabilyForDates(listDatesToCheck);
         }
@@ -170,35 +190,6 @@ namespace HotelBooking.Application.Services
             }
 
             return datesToCheck;
-        }
-
-        private async Task<ResponseResult> UpdateReservationAsync(UpdateReservationDto updateReservationDto)
-        {
-
-            var reservation = await _reservationRepository.GetByGuestIdAndCheckinAsync(updateReservationDto.GuestId, updateReservationDto.CurrentCheckIn);
-
-            if (reservation == null)
-            {
-                return ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.NotFound, "Reservation not found.");
-            }
-
-            reservation.UpdateCheckin(updateReservationDto.NewCheckIn);
-            reservation.UpdateCheckout(updateReservationDto.NewCheckOut);
-
-            if (reservation.IsValid())
-            {
-                if (await UpdateReservationAsync(reservation))
-                {
-                    var response = ReservationMapper.ToReservationDto(reservation);
-                    return ResponseResultFactory.CreateResponseResultSuccess(HttpStatusCode.OK, response);
-                }
-                else
-                {
-                    return ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.InternalServerError, "Reservation not updated. Please contact administrators.");
-                }
-            }
-
-            return ResponseResultFactory.CreateResponseWithValidationResultAlreadySet(HttpStatusCode.OK, reservation.ValidationResult);
         }
 
         private async Task<bool> AddReservationAsync(Reservation reservation)

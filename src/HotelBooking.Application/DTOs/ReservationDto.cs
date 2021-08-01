@@ -15,6 +15,8 @@ namespace HotelBooking.Application.DTOs
         [Required]
         public Guid GuestId { get; set; }
 
+        public int RoomNumber => 1;
+
         [Required]
         [DataType(DataType.Date)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]

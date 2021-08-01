@@ -25,6 +25,7 @@ namespace HotelBooking.Data.Mappings
             builder.HasOne(x => x.Room);
 
             builder.Ignore(x => x.ValidationResult);
+            builder.Ignore(x => x.DaysToStay);
 
 
             builder.ToTable("Reservations");

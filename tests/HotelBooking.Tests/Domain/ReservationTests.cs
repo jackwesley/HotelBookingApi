@@ -12,8 +12,7 @@ namespace HotelBooking.Tests.Domain
             //Arrange
             var guestId = Guid.NewGuid();
             var checkin = DateTime.Now.AddDays(1);
-            var checkout = DateTime.Now.AddDays(4);
-            var diffBetweenCheckinAndCheckoutInDays = checkout.Subtract(checkin).Days;
+            var checkout = DateTime.Now.AddDays(2);
 
             var reservation = new Reservation(guestId, checkin, checkout);
             //Act

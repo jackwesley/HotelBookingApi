@@ -24,7 +24,7 @@ namespace HotelBooking.Api.Controllers
         [SwaggerResponse(statusCode: 200, type: typeof(ResponseResult), description: "Data from reservation availability.")]
         [SwaggerResponse(statusCode: 400, type: typeof(IEnumerable<string>), description: "Bad request.")]
         [SwaggerResponse(statusCode: 500, type: typeof(IEnumerable<string>), description: "Internal server error.")]
-        public IActionResult AvailabilityForCurrentMonth(DateTime checkIn, DateTime checkOut)
+        public IActionResult CheckAvailability(DateTime checkIn, DateTime checkOut)
         {
             return CustomResponse(_reservationService.CheckAvailability(checkIn, checkOut));
         }
