@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace HotelBooking.Domain.Models
 {
-    public class StayTime : Entity
+    public class StayTime : ValueObject
     {
         public StayTime(DateTime checkIn, DateTime checkOut)
         {
@@ -17,8 +17,7 @@ namespace HotelBooking.Domain.Models
         public DateTime CheckIn { get; private set; }
         public DateTime CheckOut { get; private set; }
         public List<DateTime> DaysToStay { get; private set; }
-        //ER Relation
-        public virtual List<Reservation> Reservations { get; set; }
+
         public void UpdateCheckin(DateTime newCheckin)
         {
             CheckIn = newCheckin;

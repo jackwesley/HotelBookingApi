@@ -26,14 +26,14 @@ namespace HotelBooking.Data.Repositories
 
         public void CancelReservation(Reservation reservation)
         {
-            _context.StayTime.Remove(reservation.StayTime);
             _context.Reservations.Remove(reservation);
         }
 
         public async Task<IEnumerable<Reservation>> GetAllCheckingForTheMonthAsync()
         {
             return await _context.Reservations
-                .AsNoTracking().Where(x => x.StayTime.CheckIn > DateTime.Now.AddDays(1) && x.StayTime.CheckOut <= DateTime.Now.AddDays(30))
+                .AsNoTracking()
+                .Where(x => x.StayTime.CheckIn > DateTime.Now.AddDays(1) && x.StayTime.CheckOut <= DateTime.Now.AddDays(30))
                 .ToListAsync();
         }
 
@@ -44,7 +44,11 @@ namespace HotelBooking.Data.Repositories
 
         public async Task<Reservation> GetByGuestIdAndCheckinAsync(Guid guestId, DateTime checkin)
         {
-            return await _context.Reservations.Include(x => x.StayTime).FirstOrDefaultAsync(x => x.GuestId.Equals(guestId) && x.StayTime.CheckIn == checkin);
+            var reservations = _context.Reservations;
+            var reservationByIdAndCheckin = await reservations
+                .FirstOrDefaultAsync(x => x.GuestId.Equals(guestId) && x.StayTime.CheckIn == checkin);
+
+            return reservationByIdAndCheckin;
         }
 
         public async Task<Reservation> GetByCheckinAsync(DateTime checkin)
@@ -54,16 +58,22 @@ namespace HotelBooking.Data.Repositories
 
         public async Task<IEnumerable<Reservation>> GetAllReservationsByGuestIdAsync(Guid guestId)
         {
-            return await _context.Reservations
-              .AsNoTracking().Where(x => x.GuestId == guestId)
-              .ToListAsync(); ;
+            var reservations = _context.Reservations;
+            var reservationById = await reservations.AsNoTracking()
+                .Where(x => x.GuestId == guestId)
+                .ToListAsync();
+
+            return reservationById;
         }
 
-        public bool CheckAvailabilyForDates(List<DateTime> datesToCheck)
+        public async Task<bool> CheckAvailabilyForDatesAsync(List<DateTime> datesToCheck)
         {
-            var checkins = _context.Reservations.Where(x => datesToCheck.Contains(x.StayTime.CheckIn.Date) || datesToCheck.Contains(x.StayTime.CheckOut.Date));
+            var reservations = _context.Reservations;
+            var checkins = await reservations
+                .Where(x => datesToCheck.Contains(x.StayTime.CheckIn.Date) || datesToCheck.Contains(x.StayTime.CheckOut.Date))
+                .ToListAsync();
 
-            return checkins.ToList().Count == 0;
+            return checkins.Count == 0;
         }
 
         public void UpdateReservation(Reservation reservation)
@@ -75,7 +85,5 @@ namespace HotelBooking.Data.Repositories
         {
             _context.Dispose();
         }
-
-        
     }
 }

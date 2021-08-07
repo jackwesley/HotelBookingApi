@@ -15,8 +15,7 @@ namespace HotelBooking.Domain.Repositories
         void CancelReservation(Reservation reservation);
         Task<IEnumerable<Reservation>> GetAllReservationsByGuestIdAsync(Guid guestId);
         Task<Reservation> GetByGuestIdAndCheckinAsync(Guid guestId, DateTime checkin);
-        Task<Reservation> GetByCheckinAsync(DateTime checkin);
-        bool CheckAvailabilyForDates(List<DateTime> datesToCheck);
+        Task<bool> CheckAvailabilyForDatesAsync(List<DateTime> datesToCheck);
 
     }
 }

@@ -29,7 +29,5 @@ namespace HotelBooking.Domain.Models
             ValidationResult = StayTime.ValidationResult;
             return ValidationResult.IsValid;
         }
-
-
     }
 }

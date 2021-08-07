@@ -5,6 +5,7 @@ using HotelBooking.Core.DomainObjects;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace HotelBooking.Api.Controllers
@@ -23,9 +24,9 @@ namespace HotelBooking.Api.Controllers
         [SwaggerResponse(statusCode: 200, type: typeof(ResponseResult<ReservationDto>), description: "Data from reservation availability.")]
         [SwaggerResponse(statusCode: 400, type: typeof(ResponseResult<string>), description: "Bad request.")]
         [SwaggerResponse(statusCode: 500, type: typeof(ResponseResult<string>), description: "Internal server error.")]
-        public IActionResult CheckAvailability(DateTime checkIn, DateTime checkOut)
+        public async Task<IActionResult> CheckAvailability(DateTime checkIn, DateTime checkOut)
         {
-            return CustomResponse(_reservationService.CheckAvailability(checkIn, checkOut));
+            return CustomResponse(await _reservationService.CheckAvailabilityAsync(checkIn, checkOut));
         }
 
         [HttpPost]
@@ -37,7 +38,10 @@ namespace HotelBooking.Api.Controllers
 
         public async Task<IActionResult> PlaceReservationAsync([FromBody] ReservationDto reservationDto)
         {
-            return CustomResponse(await _reservationService.PlaceReservationAsync(reservationDto));
+            if (reservationDto == null)
+                return CustomResponse(await _reservationService.PlaceReservationAsync(reservationDto));
+
+            return CustomResponse(ResponseResultFactory.CreateResponseWithValidationResultNotSet<ReservationDto>(HttpStatusCode.NotFound, "Reservation must be provided", null));
         }
 
         [HttpDelete]
@@ -46,10 +50,12 @@ namespace HotelBooking.Api.Controllers
         [SwaggerResponse(statusCode: 400, type: typeof(ResponseResult<string>), description: "Bad request.")]
         [SwaggerResponse(statusCode: 404, type: typeof(ResponseResult<string>), description: "Not found.")]
         [SwaggerResponse(statusCode: 500, type: typeof(ResponseResult<string>), description: "Internal server error.")]
-
-        public async Task<IActionResult> CancelReservationAsync(Guid userId, DateTime checkIn)
+        public async Task<IActionResult> CancelReservationAsync(Guid guestId, DateTime checkIn)
         {
-            return CustomResponse(await _reservationService.CancelReservationAsync(userId, checkIn));
+            if (Guid.Empty != guestId)
+                return CustomResponse(await _reservationService.CancelReservationAsync(guestId, checkIn));
+
+            return CustomResponse(ResponseResultFactory.CreateResponseWithValidationResultNotSet<ReservationDto>(HttpStatusCode.NotFound, "Guest Id must be provided", null));
         }
 
         [HttpPut]
@@ -60,7 +66,10 @@ namespace HotelBooking.Api.Controllers
         [SwaggerResponse(statusCode: 500, type: typeof(ResponseResult<string>), description: "Internal server error.")]
         public async Task<IActionResult> UpdateReservationAsync([FromBody] UpdateReservationDto updateReservationDto)
         {
-            return CustomResponse(await _reservationService.ModifyReservationAsync(updateReservationDto));
+            if (updateReservationDto != null && Guid.Empty != updateReservationDto.GuestId)
+                return CustomResponse(await _reservationService.ModifyReservationAsync(updateReservationDto));
+
+            return CustomResponse(ResponseResultFactory.CreateResponseWithValidationResultNotSet<ReservationDto>(HttpStatusCode.BadRequest, "Reservation must be provided.", null));
         }
     }
 }

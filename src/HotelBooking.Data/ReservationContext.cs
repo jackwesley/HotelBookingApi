@@ -2,6 +2,7 @@
 using HotelBooking.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace HotelBooking.Data
@@ -15,8 +16,6 @@ namespace HotelBooking.Data
         }
 
         public DbSet<Reservation> Reservations { get; set; }
-
-        public DbSet<StayTime> StayTime { get; set; }
         public DbSet<Guest> Guests { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

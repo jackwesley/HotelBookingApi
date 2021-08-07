@@ -1,32 +1,25 @@
-﻿using FluentValidation.Results;
-using System;
-
-
+﻿
+using FluentValidation.Results;
 
 namespace HotelBooking.Core.DomainObjects
 {
-    public abstract class Entity
+    public abstract class ValueObject
     {
-        public Guid Id { get; set; }
-
-        protected Entity()
-        {
-            Id = Guid.NewGuid();
-        }
-
         public ValidationResult ValidationResult { get; set; }
+
+        public abstract bool IsValid();
 
         public override bool Equals(object obj)
         {
-            var compareTo = obj as Entity;
+            var compareTo = obj as ValueObject;
 
             if (ReferenceEquals(this, compareTo)) return true;
             if (ReferenceEquals(null, compareTo)) return false;
 
-            return Id.Equals(compareTo.Id);
+            return (this == compareTo);
         }
 
-        public static bool operator ==(Entity a, Entity b)
+        public static bool operator ==(ValueObject a, ValueObject b)
         {
             if (ReferenceEquals(a, null) && ReferenceEquals(b, null))
                 return true;
@@ -37,21 +30,16 @@ namespace HotelBooking.Core.DomainObjects
             return a.Equals(b);
         }
 
-        public static bool operator !=(Entity a, Entity b)
+        public static bool operator !=(ValueObject a, ValueObject b)
         {
             return !(a == b);
         }
 
         public override int GetHashCode()
         {
-            return (GetType().GetHashCode() * 907) + Id.GetHashCode();
+            decimal hashCode = this.GetHashCode();
+            return (int)hashCode;
         }
 
-        public override string ToString()
-        {
-            return $"{GetType().Name} [Id={Id}]";
-        }
-
-        public abstract bool IsValid();
     }
 }
