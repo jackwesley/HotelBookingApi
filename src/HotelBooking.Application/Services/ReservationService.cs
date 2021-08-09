@@ -36,13 +36,59 @@ namespace HotelBooking.Application.Services
             }
         }
 
+        public async Task<ResponseResult<ReservationDto>> PlaceReservationAsync(ReservationDto reservationDto)
+        {
+            try
+            {
+                return await PlaceReservationHandleAsync(reservationDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error trying to place Reservation");
+                return ResponseResultFactory.CreateResponseServerError<ReservationDto>(null);
+            }
+        }
+
+        public async Task<ResponseResult<ReservationDto>> ModifyReservationAsync(UpdateReservationDto updateReservationDto)
+        {
+            try
+            {
+                return await ModifyReservationHandleAsync(updateReservationDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error trying to modify Reservation");
+                return ResponseResultFactory.CreateResponseServerError<ReservationDto>(null);
+            }
+        }
+
+        public async Task<ResponseResult<string>> CancelReservationAsync(Guid guestId, DateTime checkin)
+        {
+            try
+            {
+                var reservationToCancel = await _reservationRepository.GetByGuestIdAndCheckinAsync(guestId, checkin);
+
+                if (reservationToCancel != null)
+                {
+                    return await CancelReservationHandleAsync(reservationToCancel);
+                }
+
+                return ResponseResultFactory.CreateResponseResultSuccess(HttpStatusCode.NotFound, "Reservation not found.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error trying to cancel Reservation");
+                return ResponseResultFactory.CreateResponseServerError<string>("Reservation not canceled. Please contact administrators.");
+            }
+        }
+
         private async Task<ResponseResult<string>> AvailabilityForCheckinAndCheckoutAsync(DateTime checkIn, DateTime checkOut)
         {
             var stayTime = new StayTime(checkIn, checkOut);
 
             if (!stayTime.IsValid())
             {
-                return ResponseResultFactory.CreateResponseWithValidationResultAlreadySet<string>(HttpStatusCode.BadRequest, stayTime.ValidationResult, string.Empty);
+                return ResponseResultFactory.CreateResponseWithValidationResultAlreadySet(HttpStatusCode.BadRequest, stayTime.ValidationResult, string.Empty);
             }
 
             if (await IsAvailableForDatesAsync(stayTime.DaysToStay))
@@ -53,21 +99,7 @@ namespace HotelBooking.Application.Services
             return ResponseResultFactory.CreateResponseResultSuccess(HttpStatusCode.OK, $"Room is NOT available for CheckIn: {checkIn.ToString("yyyy-MM-dd")} and checkOut:{checkOut.ToString("yyyy-MM-dd")}");
         }
 
-        public async Task<ResponseResult<ReservationDto>> PlaceReservationAsync(ReservationDto reservationDto)
-        {
-            try
-            {
-                return await CreateReservationHandleAsync(reservationDto);
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error trying to place Reservation");
-                return ResponseResultFactory.CreateResponseServerError<ReservationDto>(null);
-            }
-        }
-
-        private async Task<ResponseResult<ReservationDto>> CreateReservationHandleAsync(ReservationDto reservationDto)
+        private async Task<ResponseResult<ReservationDto>> PlaceReservationHandleAsync(ReservationDto reservationDto)
         {
             var reservation = ReservationDtoMapper.ToReservation(reservationDto);
 
@@ -82,19 +114,6 @@ namespace HotelBooking.Application.Services
             }
 
             return ResponseResultFactory.CreateResponseWithValidationResultNotSet<ReservationDto>(HttpStatusCode.BadRequest, $"Room is NOT available for CheckIn: {reservationDto.CheckIn.ToString("yyyy-MM-dd")} and checkOut:{reservationDto.CheckOut.ToString("yyyy-MM-dd")}", null);
-        }
-
-        public async Task<ResponseResult<ReservationDto>> ModifyReservationAsync(UpdateReservationDto updateReservationDto)
-        {
-            try
-            {
-                return await ModifyReservationHandleAsync(updateReservationDto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error trying to modify Reservation");
-                return ResponseResultFactory.CreateResponseServerError<ReservationDto>(null);
-            }
         }
 
         private async Task<ResponseResult<ReservationDto>> ModifyReservationHandleAsync(UpdateReservationDto updateReservationDto)
@@ -116,30 +135,10 @@ namespace HotelBooking.Application.Services
 
             if (await IsAvailableForDatesAsync(reservation.StayTime.DaysToStay))
             {
-                return await UpdateReservationAsync(reservation);
+                return await UpdateReservationHandleAsync(reservation);
             }
 
             return ResponseResultFactory.CreateResponseWithValidationResultNotSet<ReservationDto>(HttpStatusCode.BadRequest, $"Room is NOT available for CheckIn: {updateReservationDto.NewCheckIn.ToString("yyyy-MM-dd")} and checkOut:{updateReservationDto.NewCheckOut.ToString("yyyy-MM-dd")}", null);
-        }
-
-        public async Task<ResponseResult<string>> CancelReservationAsync(Guid guestId, DateTime checkin)
-        {
-            try
-            {
-                var reservationToCancel = await _reservationRepository.GetByGuestIdAndCheckinAsync(guestId, checkin);
-
-                if (reservationToCancel != null)
-                {
-                    return await CancelReservationHandleAsync(reservationToCancel);
-                }
-
-                return ResponseResultFactory.CreateResponseResultSuccess(HttpStatusCode.NotFound, "Reservation not found.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error trying to cancel Reservation");
-                return ResponseResultFactory.CreateResponseServerError<string>("Reservation not canceled. Please contact administrators.");
-            }
         }
 
         private async Task<ResponseResult<string>> CancelReservationHandleAsync(Reservation reservationToCancel)
@@ -168,22 +167,27 @@ namespace HotelBooking.Application.Services
             return ResponseResultFactory.CreateResponseWithValidationResultNotSet<ReservationDto>(HttpStatusCode.InternalServerError, "Reservation not saved. Please contact administrators.", null);
         }
 
-        private async Task<bool> CreateReservationAsync(Reservation reservation)
+        private async Task<ResponseResult<ReservationDto>> UpdateReservationHandleAsync(Reservation reservation)
         {
-            await _reservationRepository.AddReservationAsync(reservation);
-            return await _reservationRepository.UnitOfWork.CommitAsync();
-        }
-
-        private async Task<ResponseResult<ReservationDto>> UpdateReservationAsync(Reservation reservation)
-        {
-            _reservationRepository.UpdateReservation(reservation);
-            if(await _reservationRepository.UnitOfWork.CommitAsync())
+            if (await UpdateReservationAsync(reservation))
             {
                 var response = ReservationMapper.ToReservationDto(reservation);
                 return ResponseResultFactory.CreateResponseResultSuccess(HttpStatusCode.OK, response);
             }
 
             return ResponseResultFactory.CreateResponseWithValidationResultNotSet<ReservationDto>(HttpStatusCode.InternalServerError, "Reservation not updated. Please contact administrators.", null);
+        }
+
+        private async Task<bool> UpdateReservationAsync(Reservation reservation)
+        {
+            _reservationRepository.UpdateReservation(reservation);
+            return await _reservationRepository.UnitOfWork.CommitAsync();
+        }
+
+        private async Task<bool> CreateReservationAsync(Reservation reservation)
+        {
+            await _reservationRepository.AddReservationAsync(reservation);
+            return await _reservationRepository.UnitOfWork.CommitAsync();
         }
 
         private async Task<bool> CancelReservationAsync(Reservation reservation)
