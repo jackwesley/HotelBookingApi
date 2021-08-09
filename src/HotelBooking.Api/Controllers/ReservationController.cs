@@ -38,7 +38,7 @@ namespace HotelBooking.Api.Controllers
 
         public async Task<IActionResult> PlaceReservationAsync([FromBody] ReservationDto reservationDto)
         {
-            if (reservationDto == null)
+            if (reservationDto != null)
                 return CustomResponse(await _reservationService.PlaceReservationAsync(reservationDto));
 
             return CustomResponse(ResponseResultFactory.CreateResponseWithValidationResultNotSet<ReservationDto>(HttpStatusCode.NotFound, "Reservation must be provided", null));

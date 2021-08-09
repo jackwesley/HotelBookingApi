@@ -27,7 +27,7 @@ namespace HotelBooking.Application.Services
         {
             try
             {
-                return await AvailabilityForCheinAndCheckoutAsync(checkIn, checkOut);
+                return await AvailabilityForCheckinAndCheckoutAsync(checkIn, checkOut);
             }
             catch (Exception ex)
             {
@@ -36,7 +36,7 @@ namespace HotelBooking.Application.Services
             }
         }
 
-        private async Task<ResponseResult<string>> AvailabilityForCheinAndCheckoutAsync(DateTime checkIn, DateTime checkOut)
+        private async Task<ResponseResult<string>> AvailabilityForCheckinAndCheckoutAsync(DateTime checkIn, DateTime checkOut)
         {
             var stayTime = new StayTime(checkIn, checkOut);
 
@@ -78,7 +78,7 @@ namespace HotelBooking.Application.Services
 
             if (await IsAvailableForDatesAsync(reservation.StayTime.DaysToStay))
             {
-                return await CreateReservationAsync(reservationDto);
+                return await CreateReservationHandleAsync(reservation);
             }
 
             return ResponseResultFactory.CreateResponseWithValidationResultNotSet<ReservationDto>(HttpStatusCode.BadRequest, $"Room is NOT available for CheckIn: {reservationDto.CheckIn.ToString("yyyy-MM-dd")} and checkOut:{reservationDto.CheckOut.ToString("yyyy-MM-dd")}", null);
@@ -110,18 +110,13 @@ namespace HotelBooking.Application.Services
             reservation.StayTime.UpdateCheckout(updateReservationDto.NewCheckOut);
 
             if (!reservation.IsValid())
+            {
                 return ResponseResultFactory.CreateResponseWithValidationResultAlreadySet<ReservationDto>(HttpStatusCode.BadRequest, reservation.ValidationResult, null);
+            }
 
             if (await IsAvailableForDatesAsync(reservation.StayTime.DaysToStay))
             {
-                if (await UpdateReservationAsync(reservation))
-                {
-                    var response = ReservationMapper.ToReservationDto(reservation);
-                    return ResponseResultFactory.CreateResponseResultSuccess(HttpStatusCode.OK, response);
-                }
-
-                return ResponseResultFactory.CreateResponseWithValidationResultNotSet<ReservationDto>(HttpStatusCode.InternalServerError, "Reservation not updated. Please contact administrators.", null);
-
+                return await UpdateReservationAsync(reservation);
             }
 
             return ResponseResultFactory.CreateResponseWithValidationResultNotSet<ReservationDto>(HttpStatusCode.BadRequest, $"Room is NOT available for CheckIn: {updateReservationDto.NewCheckIn.ToString("yyyy-MM-dd")} and checkOut:{updateReservationDto.NewCheckOut.ToString("yyyy-MM-dd")}", null);
@@ -154,24 +149,12 @@ namespace HotelBooking.Application.Services
                 return ResponseResultFactory.CreateResponseResultSuccess(HttpStatusCode.NoContent, "Reservation canceled successfully.");
             }
 
-            return ResponseResultFactory.CreateResponseWithValidationResultNotSet<string>(HttpStatusCode.InternalServerError, "Reservation not canceled. Please contact administrators.", string.Empty);
+            return ResponseResultFactory.CreateResponseWithValidationResultNotSet(HttpStatusCode.InternalServerError, "Reservation not canceled. Please contact administrators.", string.Empty);
         }
 
         private async Task<bool> IsAvailableForDatesAsync(List<DateTime> listDatesToCheck)
         {
             return await _reservationRepository.CheckAvailabilyForDatesAsync(listDatesToCheck);
-        }
-
-        private async Task<ResponseResult<ReservationDto>> CreateReservationAsync(ReservationDto reservationDto)
-        {
-            var reservation = ReservationDtoMapper.ToReservation(reservationDto);
-
-            if (reservation.IsValid())
-            {
-                return await CreateReservationHandleAsync(reservation);
-            }
-
-            return ResponseResultFactory.CreateResponseWithValidationResultAlreadySet<ReservationDto>(HttpStatusCode.BadRequest, reservation.ValidationResult, null);
         }
 
         private async Task<ResponseResult<ReservationDto>> CreateReservationHandleAsync(Reservation reservation)
@@ -191,10 +174,16 @@ namespace HotelBooking.Application.Services
             return await _reservationRepository.UnitOfWork.CommitAsync();
         }
 
-        private async Task<bool> UpdateReservationAsync(Reservation reservation)
+        private async Task<ResponseResult<ReservationDto>> UpdateReservationAsync(Reservation reservation)
         {
             _reservationRepository.UpdateReservation(reservation);
-            return await _reservationRepository.UnitOfWork.CommitAsync();
+            if(await _reservationRepository.UnitOfWork.CommitAsync())
+            {
+                var response = ReservationMapper.ToReservationDto(reservation);
+                return ResponseResultFactory.CreateResponseResultSuccess(HttpStatusCode.OK, response);
+            }
+
+            return ResponseResultFactory.CreateResponseWithValidationResultNotSet<ReservationDto>(HttpStatusCode.InternalServerError, "Reservation not updated. Please contact administrators.", null);
         }
 
         private async Task<bool> CancelReservationAsync(Reservation reservation)
